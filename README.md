@@ -15,7 +15,8 @@ Extracted: 2026-10-28
 | `tokens/figma-source.json` | Raw export from the Figma variables and styles, plus an inventory of the Figma component variants. |
 | `tokens/build_tokens.py` | Rebuilds the three token files from `figma-source.json`. |
 | `components/fluent.css` | Component styles (`.f-*` classes) built only from the tokens. |
-| `index.html` | Live reference gallery for every token and component. |
+| `index.html` | Landing page linking the gallery and the examples. |
+| `gallery.html` | Live reference gallery for every token and component. |
 | `templates/starter.html` | App-shell starting point for a new mock. |
 | `examples/` | Mocks built on the system, with their own [README](examples/README.md). |
 
@@ -94,13 +95,15 @@ These Figma components have no CSS yet: Carousel, Swatch picker, Tag picker, Inf
 
 ## Viewing the gallery
 
-`index.html` loads its CSS with relative paths, so serve the folder rather than opening the file directly:
+The pages load their CSS with relative paths, so serve the folder rather than opening the files directly:
 
 ```bash
 python3 -m http.server 4321
 ```
 
-Then open http://localhost:4321/
+Then open http://localhost:4321/ for the landing page, or `/gallery.html` for the full reference.
+
+Both are also published at <https://salvatorereda.github.io/fluent-2-web-design-system/>.
 
 ## Updating from Figma
 

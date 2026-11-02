@@ -4,380 +4,215 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fluent 2 Web</title>
+<!-- Landing page for the repository. Built on the design system it documents. -->
 <link rel="stylesheet" href="tokens/tokens.css">
 <link rel="stylesheet" href="components/fluent.css">
 <style>
-  .doc { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
-  .doc-nav { position: sticky; top: 0; height: 100vh; overflow: auto; border-right: 1px solid var(--colorNeutralStroke2); }
-  .doc-main { padding: 32px 40px 80px; max-width: 1200px; }
-  .doc-main section { margin-bottom: 56px; scroll-margin-top: 24px; }
-  .doc-main h2 { margin: 0 0 4px; }
-  .doc-main .lede { margin: 0 0 20px; color: var(--colorNeutralForeground3); }
-  .demo { padding: 24px; background: var(--colorNeutralBackground1); border: 1px solid var(--colorNeutralStroke2); border-radius: var(--borderRadiusLarge); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-  .demo + .demo { margin-top: 12px; }
-  .demo--col { flex-direction: column; align-items: stretch; }
-  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
-  .swatch { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: var(--borderRadiusMedium); background: var(--colorNeutralBackground1); border: 1px solid var(--colorNeutralStroke2); min-width: 0; }
-  .swatch i { flex: none; width: 36px; height: 36px; border-radius: var(--borderRadiusMedium); border: 1px solid var(--colorNeutralStrokeAlpha1); }
-  .swatch code { display: block; font-size: 11px; line-height: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--fontFamilyMonospace); }
-  .swatch small { color: var(--colorNeutralForeground3); font-size: 11px; }
-  .group-title { margin: 20px 0 8px; font-weight: 600; color: var(--colorNeutralForeground2); }
-  .scale { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-  .scale div { text-align: center; font-size: 11px; color: var(--colorNeutralForeground3); }
-  .scale b { display: block; background: var(--colorBrandBackground2); border: 1px solid var(--colorBrandStroke2); margin: 0 auto 6px; }
-  .type-row { display: flex; align-items: baseline; gap: 24px; padding: 8px 0; border-bottom: 1px solid var(--colorNeutralStroke3); }
-  .type-row code { width: 220px; flex: none; font-size: 12px; color: var(--colorNeutralForeground3); font-family: var(--fontFamilyMonospace); }
-  .shadow-tile { width: 140px; height: 90px; display: grid; place-items: center; background: var(--colorNeutralBackground1); border-radius: var(--borderRadiusLarge); font-size: 12px; }
-  .search-tokens { margin-bottom: 12px; width: 320px; }
-  @media (max-width: 800px) { .doc { grid-template-columns: 1fr; } .doc-nav { position: static; height: auto; width: 100%; } .doc-main { padding: 24px 16px; } }
+  .page { max-width: 1080px; margin: 0 auto;
+    padding: var(--spacingVerticalXXXL) max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); }
+
+  .masthead { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacingHorizontalL); margin-bottom: var(--spacingVerticalXXXL); }
+  .masthead__text { flex: 1; min-width: 260px; }
+  .masthead h1 { margin: 0; }
+  .masthead p { margin: var(--spacingVerticalS) 0 0; max-width: 60ch; color: var(--colorNeutralForeground2); }
+  .masthead__meta { display: flex; flex-wrap: wrap; gap: var(--spacingHorizontalS); margin-top: var(--spacingVerticalL); }
+
+  .section { margin-bottom: var(--spacingVerticalXXXL); }
+  .section__head { display: flex; align-items: baseline; gap: var(--spacingHorizontalS); margin-bottom: var(--spacingVerticalM);
+    padding-bottom: var(--spacingVerticalS); border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .section__head h2 { margin: 0; }
+  .section__count { color: var(--colorNeutralForeground3); }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: var(--spacingHorizontalL); }
+  .cards--single { grid-template-columns: minmax(0, 1fr); }
+
+  /* Each card is a whole link, so the Fluent card styles carry the interaction */
+  a.card { text-decoration: none; color: inherit; gap: var(--spacingVerticalM); }
+  a.card:hover .card__title { color: var(--colorBrandForegroundLinkHover); text-decoration: underline; }
+  .card__art { margin: calc(var(--spacingVerticalM) * -1) calc(var(--spacingHorizontalM) * -1) 0;
+    border-radius: var(--borderRadiusMedium) var(--borderRadiusMedium) 0 0; background: var(--colorNeutralBackground3); overflow: hidden; }
+  .card__art svg { display: block; width: 100%; height: auto; }
+  .card__title { font-weight: var(--fontWeightSemibold); color: var(--colorBrandForegroundLink); }
+  .card__desc { margin: var(--spacingVerticalXXS) 0 0; color: var(--colorNeutralForeground2); }
+  .card__tags { display: flex; flex-wrap: wrap; gap: var(--spacingHorizontalXS); margin-top: auto; padding-top: var(--spacingVerticalXS); }
+
+  .colophon { padding-top: var(--spacingVerticalXL); border-top: var(--strokeWidthThin) solid var(--colorNeutralStroke2); color: var(--colorNeutralForeground3); }
+  .colophon p { margin: 0 0 var(--spacingVerticalS); max-width: 70ch; }
+  .colophon p:last-child { margin-bottom: 0; }
+
+  /* Card art: schematic, drawn from tokens so it follows the theme */
+  .art-fg { fill: var(--colorNeutralForeground3); }
+  .art-line { stroke: var(--colorNeutralStroke1); }
+  .art-brand { fill: var(--colorBrandBackgroundCompound); }
+  .art-surface { fill: var(--colorNeutralBackground1); }
+  .art-muted { fill: var(--colorNeutralStroke2); }
 </style>
 </head>
 <body class="f-root">
-<svg width="0" height="0" style="position:absolute">
-  <symbol id="i-add" viewBox="0 0 20 20"><path d="M10 2.5a.5.5 0 0 1 .5.5v6.5H17a.5.5 0 0 1 0 1h-6.5V17a.5.5 0 0 1-1 0v-6.5H3a.5.5 0 0 1 0-1h6.5V3a.5.5 0 0 1 .5-.5Z"/></symbol>
-  <symbol id="i-chevron-down" viewBox="0 0 20 20"><path d="M15.85 7.65a.5.5 0 0 1 0 .7l-5.5 5.5a.5.5 0 0 1-.7 0l-5.5-5.5a.5.5 0 1 1 .7-.7L10 12.79l5.15-5.14a.5.5 0 0 1 .7 0Z"/></symbol>
-  <symbol id="i-chevron-right" viewBox="0 0 20 20"><path d="M7.65 4.15a.5.5 0 0 0 0 .7L12.79 10l-5.14 5.15a.5.5 0 0 0 .7.7l5.5-5.5a.5.5 0 0 0 0-.7l-5.5-5.5a.5.5 0 0 0-.7 0Z"/></symbol>
-  <symbol id="i-dismiss" viewBox="0 0 20 20"><path d="M4.09 4.22l.06-.07a.5.5 0 0 1 .63-.06l.07.06L10 9.29l5.15-5.14a.5.5 0 0 1 .63-.06l.07.06c.18.17.2.44.06.63l-.06.07L10.71 10l5.14 5.15c.18.17.2.44.06.63l-.06.07a.5.5 0 0 1-.63.06l-.07-.06L10 10.71l-5.15 5.14a.5.5 0 0 1-.63.06l-.07-.06a.5.5 0 0 1-.06-.63l.06-.07L9.29 10 4.15 4.85a.5.5 0 0 1-.06-.63l.06-.07-.06.07Z"/></symbol>
-  <symbol id="i-check" viewBox="0 0 12 12"><path d="M9.76 3.2c.3.29.32.76.04 1.06l-4.25 4.5a.75.75 0 0 1-1.08.02L2.22 6.53a.75.75 0 0 1 1.06-1.06l1.7 1.7L8.7 3.24a.75.75 0 0 1 1.06-.04Z"/></symbol>
-  <symbol id="i-search" viewBox="0 0 20 20"><path d="M8.5 3a5.5 5.5 0 0 1 4.23 9.02l4.12 4.13a.5.5 0 0 1-.63.76l-.07-.06-4.13-4.12A5.5 5.5 0 1 1 8.5 3Zm0 1a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z"/></symbol>
-  <symbol id="i-home" viewBox="0 0 20 20"><path d="M9.07 2.36a1.5 1.5 0 0 1 1.86 0l5.5 4.37c.36.28.57.72.57 1.18v7.59c0 .83-.67 1.5-1.5 1.5h-3a1.5 1.5 0 0 1-1.5-1.5V12a.5.5 0 0 0-.5-.5H9a.5.5 0 0 0-.5.5v3.5c0 .83-.67 1.5-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V7.91c0-.46.21-.9.57-1.18l5.5-4.37Z"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 20 20"><path d="M6 2a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V7.41c0-.4-.16-.78-.44-1.06l-3.91-3.91A1.5 1.5 0 0 0 10.59 2H6Zm-1 2a1 1 0 0 1 1-1h4v3.5c0 .83.67 1.5 1.5 1.5H15v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Zm9.8 3h-3.3a.5.5 0 0 1-.5-.5V3.2L14.8 7Z"/></symbol>
-  <symbol id="i-settings" viewBox="0 0 20 20"><path d="M10 6.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM7.5 10a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Zm.48-7.52A1.5 1.5 0 0 1 9.4 1.5h1.2c.68 0 1.27.45 1.44 1.1l.3 1.11 1.04.6 1.1-.31a1.5 1.5 0 0 1 1.7.69l.6 1.04a1.5 1.5 0 0 1-.26 1.79l-.82.8v1.2l.82.8c.48.48.59 1.22.26 1.8l-.6 1.03a1.5 1.5 0 0 1-1.7.7l-1.1-.31-1.04.6-.3 1.1a1.5 1.5 0 0 1-1.44 1.11H9.4a1.5 1.5 0 0 1-1.45-1.1l-.3-1.12-1.03-.6-1.1.31a1.5 1.5 0 0 1-1.7-.69l-.6-1.04a1.5 1.5 0 0 1 .25-1.8l.82-.8V9.4l-.82-.8a1.5 1.5 0 0 1-.25-1.8l.6-1.03a1.5 1.5 0 0 1 1.7-.7l1.1.31 1.03-.6.3-1.1Z"/></symbol>
-  <symbol id="i-info" viewBox="0 0 20 20"><path d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm0 1a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm0 5.5c.28 0 .5.22.5.5v4.5a.5.5 0 0 1-1 0V9c0-.28.22-.5.5-.5Zm0-2.25a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5Z"/></symbol>
-  <symbol id="i-success" viewBox="0 0 20 20"><path d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm3.36 5.65a.5.5 0 0 0-.64-.06l-.07.06L9 11.3 7.35 9.65l-.07-.06a.5.5 0 0 0-.7.7l.07.07 2 2 .07.06c.17.12.4.12.56 0l.07-.06 4-4 .07-.08a.5.5 0 0 0-.06-.63Z"/></symbol>
-  <symbol id="i-warning" viewBox="0 0 20 20"><path d="M8.68 2.79a1.5 1.5 0 0 1 2.64 0l6.5 12A1.5 1.5 0 0 1 16.5 17h-13a1.5 1.5 0 0 1-1.32-2.21l6.5-12ZM10 13a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0-6.5a.5.5 0 0 0-.5.5v4.5a.5.5 0 0 0 1 0V7a.5.5 0 0 0-.5-.5Z"/></symbol>
-  <symbol id="i-error" viewBox="0 0 20 20"><path d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm0 10.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM10 6a.5.5 0 0 0-.5.41v4.68a.5.5 0 0 0 1 0V6.41A.5.5 0 0 0 10 6Z"/></symbol>
-  <symbol id="i-more" viewBox="0 0 20 20"><path d="M6.25 10a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0Zm5 0a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0ZM15 11.25a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z"/></symbol>
-  <symbol id="i-star" viewBox="0 0 20 20"><path d="M9.1 2.9a1 1 0 0 1 1.8 0l1.93 3.91 4.31.63a1 1 0 0 1 .56 1.7l-3.12 3.05.73 4.3a1 1 0 0 1-1.45 1.05L10 15.51l-3.86 2.03a1 1 0 0 1-1.45-1.05l.74-4.3L2.3 9.14a1 1 0 0 1 .56-1.7l4.31-.63L9.1 2.9Z"/></symbol>
-</svg>
+<div class="page">
 
-<div class="doc">
-  <nav class="f-nav doc-nav" aria-label="Sections">
-    <div class="f-nav__header"><span class="f-avatar f-avatar--brand f-avatar--square" style="--size:28px">F2</span>Fluent 2 Web</div>
-    <div class="f-nav__section">Foundations</div>
-    <a class="f-nav-item" href="#color">Color</a>
-    <a class="f-nav-item" href="#typography">Typography</a>
-    <a class="f-nav-item" href="#spacing">Spacing &amp; shape</a>
-    <a class="f-nav-item" href="#elevation">Elevation</a>
-    <div class="f-nav__section">Components</div>
-    <a class="f-nav-item" href="#button">Button</a>
-    <a class="f-nav-item" href="#inputs">Inputs &amp; fields</a>
-    <a class="f-nav-item" href="#selection">Checkbox, radio, switch</a>
-    <a class="f-nav-item" href="#badge">Badge, tag, avatar</a>
-    <a class="f-nav-item" href="#card">Card</a>
-    <a class="f-nav-item" href="#navigation">Tabs, nav, breadcrumb</a>
-    <a class="f-nav-item" href="#feedback">Feedback</a>
-    <a class="f-nav-item" href="#overlays">Dialog, menu, popover</a>
-    <a class="f-nav-item" href="#data">Table, list, tree</a>
-    <div class="f-nav__section">Theme</div>
-    <div class="f-row" style="padding:4px 8px">
-      <button class="f-button f-button--small" data-set-theme="light">Light</button>
-      <button class="f-button f-button--small" data-set-theme="dark">Dark</button>
+  <header class="masthead">
+    <div class="masthead__text">
+      <h1 class="text-title-1">Fluent 2 Web</h1>
+      <p class="text-body-2">Microsoft's Fluent 2 Web design system as code: every design token from the community Figma file as CSS variables, about 35 components as plain CSS classes, and a few mocks built on top. No build step and no dependencies — link two stylesheets and start.</p>
+      <div class="masthead__meta">
+        <span class="f-badge f-badge--informative f-badge--tint f-badge--rounded">358 color tokens</span>
+        <span class="f-badge f-badge--informative f-badge--tint f-badge--rounded">Light + dark</span>
+        <span class="f-badge f-badge--informative f-badge--tint f-badge--rounded">~35 components</span>
+        <span class="f-badge f-badge--informative f-badge--tint f-badge--rounded">No dependencies</span>
+      </div>
     </div>
-  </nav>
+    <button class="f-button f-button--subtle f-button--icon" id="theme" aria-label="Switch theme" title="Switch theme">
+      <svg class="f-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M12 3.75a8.25 8.25 0 0 1 0 16.5Z" fill="currentColor"/>
+      </svg>
+    </button>
+  </header>
 
-  <main class="doc-main">
-    <header style="margin-bottom:40px">
-      <div class="text-large-title">Fluent 2 Web</div>
-      <p class="text-body-2 f-text-secondary" style="margin:8px 0 0;max-width:680px">Tokens and components taken from the <a class="f-link" href="https://www.figma.com/design/X5qiNutiFaiAwk6CJ7aPA8/Microsoft-Fluent-2-Web--Community-">Microsoft Fluent 2 Web community Figma file</a>. Link <code>tokens/tokens.css</code> and <code>components/fluent.css</code> to build mocks against it.</p>
-    </header>
-
-    <section id="color">
-      <h2 class="text-title-3">Color</h2>
-      <p class="lede">Semantic tokens from the Figma <b>Mode</b> collection, in Light and Dark. Use these instead of raw hex values.</p>
-      <div class="f-input search-tokens"><svg class="f-icon"><use href="#i-search"/></svg><input id="tokenFilter" placeholder="Filter tokens, e.g. brand, danger, stroke"></div>
-      <div id="colorGroups"></div>
-      <div class="group-title">Brand ramp</div>
-      <div class="swatches" id="brandRamp"></div>
-    </section>
-
-    <section id="typography">
-      <h2 class="text-title-3">Typography</h2>
-      <p class="lede">Segoe UI type ramp. Add a <code>.text-*</code> class to any element.</p>
-      <div class="demo demo--col" id="typeRamp" style="gap:0"></div>
-    </section>
-
-    <section id="spacing">
-      <h2 class="text-title-3">Spacing &amp; shape</h2>
-      <p class="lede">The same scale is used for <code>--spacingHorizontal*</code> and <code>--spacingVertical*</code>.</p>
-      <div class="demo scale" id="spacingScale"></div>
-      <div class="demo scale" id="radiusScale"></div>
-    </section>
-
-    <section id="elevation">
-      <h2 class="text-title-3">Elevation</h2>
-      <p class="lede">Shadow tokens. Shadows get darker automatically in dark mode.</p>
-      <div class="demo" style="gap:28px;background:var(--colorNeutralBackground2)">
-        <div class="shadow-tile" style="box-shadow:var(--shadow2)">--shadow2</div>
-        <div class="shadow-tile" style="box-shadow:var(--shadow4)">--shadow4</div>
-        <div class="shadow-tile" style="box-shadow:var(--shadow8)">--shadow8</div>
-        <div class="shadow-tile" style="box-shadow:var(--shadow16)">--shadow16</div>
-        <div class="shadow-tile" style="box-shadow:var(--shadow28)">--shadow28</div>
-        <div class="shadow-tile" style="box-shadow:var(--shadow64)">--shadow64</div>
-      </div>
-    </section>
-
-    <section id="button">
-      <h2 class="text-title-3">Button</h2>
-      <p class="lede">Styles: Secondary (default), Primary, Outline, Subtle, Transparent. Sizes: small 24, medium 32, large 40.</p>
-      <div class="demo">
-        <button class="f-button">Secondary</button>
-        <button class="f-button f-button--primary">Primary</button>
-        <button class="f-button f-button--outline">Outline</button>
-        <button class="f-button f-button--subtle">Subtle</button>
-        <button class="f-button f-button--transparent">Transparent</button>
-        <button class="f-button" disabled>Disabled</button>
-        <button class="f-button" aria-pressed="true">Selected</button>
-      </div>
-      <div class="demo">
-        <button class="f-button f-button--primary f-button--small"><svg class="f-icon f-icon--16"><use href="#i-add"/></svg>Small</button>
-        <button class="f-button f-button--primary"><svg class="f-icon"><use href="#i-add"/></svg>Medium</button>
-        <button class="f-button f-button--primary f-button--large"><svg class="f-icon f-icon--24"><use href="#i-add"/></svg>Large</button>
-        <button class="f-button f-button--icon" aria-label="Add"><svg class="f-icon"><use href="#i-add"/></svg></button>
-        <button class="f-button f-button--icon f-button--subtle" aria-label="More"><svg class="f-icon"><use href="#i-more"/></svg></button>
-        <button class="f-button f-button--circular">Circular</button>
-        <span class="f-split-button"><button class="f-button f-button--primary">Split</button><button class="f-button f-button--primary" aria-label="More options"><svg class="f-icon"><use href="#i-chevron-down"/></svg></button></span>
-        <span class="f-split-button"><button class="f-button">Split</button><button class="f-button" aria-label="More options"><svg class="f-icon"><use href="#i-chevron-down"/></svg></button></span>
-      </div>
-      <div class="demo">
-        <button class="f-button f-button--compound"><svg class="f-icon f-icon--24"><use href="#i-doc"/></svg><span>New document<span class="f-button__secondary">Start from a blank page</span></span></button>
-        <button class="f-button f-button--compound f-button--primary"><svg class="f-icon f-icon--24"><use href="#i-add"/></svg><span>Create project<span class="f-button__secondary">Set up a workspace</span></span></button>
-      </div>
-    </section>
-
-    <section id="inputs">
-      <h2 class="text-title-3">Inputs &amp; fields</h2>
-      <p class="lede">Input, Textarea, Dropdown, SearchBox and Spin button share the same styles: Outline, Filled darker, Filled lighter, Underline.</p>
-      <div class="demo" style="align-items:flex-start;gap:24px">
-        <div class="f-field" style="width:260px"><label class="f-label">Project name<span class="f-label__required">*</span></label>
-          <span class="f-input"><input placeholder="Enter a name"></span><span class="f-field__hint">Visible to everyone in your org.</span></div>
-        <div class="f-field f-field--error" style="width:260px"><label class="f-label">Email</label>
-          <span class="f-input"><input value="not-an-email"></span><span class="f-field__message"><svg class="f-icon f-icon--16"><use href="#i-error"/></svg>Enter a valid email address.</span></div>
-        <div class="f-field" style="width:260px"><label class="f-label">Region</label>
-          <span class="f-select"><select><option>West Europe</option><option>East US</option></select><svg class="f-icon f-select__chevron"><use href="#i-chevron-down"/></svg></span></div>
-      </div>
-      <div class="demo" style="align-items:flex-start;gap:24px;background:var(--colorNeutralBackground2)">
-        <span class="f-input f-input--filled-darker" style="width:200px"><input placeholder="Filled darker"></span>
-        <span class="f-input f-input--filled-lighter" style="width:200px"><input placeholder="Filled lighter"></span>
-        <span class="f-input f-input--underline" style="width:200px"><input placeholder="Underline"></span>
-        <span class="f-input is-disabled" style="width:200px"><input placeholder="Disabled" disabled></span>
-      </div>
-      <div class="demo" style="align-items:flex-start;gap:24px">
-        <span class="f-searchbox" style="width:260px"><svg class="f-icon"><use href="#i-search"/></svg><input placeholder="Search"></span>
-        <span class="f-input f-input--small" style="width:160px"><input placeholder="Small"></span>
-        <span class="f-input f-input--large" style="width:200px"><input placeholder="Large"></span>
-        <span class="f-spinbutton" style="width:120px"><input type="number" value="12"></span>
-        <div class="f-field" style="width:360px"><label class="f-label">Description</label><span class="f-textarea"><textarea placeholder="Add details"></textarea></span></div>
-        <div class="f-field" style="width:240px"><label class="f-label">Volume</label><input type="range" class="f-slider" value="60" style="--fill:60%" oninput="this.style.setProperty('--fill', this.value + '%')"></div>
-      </div>
-    </section>
-
-    <section id="selection">
-      <h2 class="text-title-3">Checkbox, radio, switch</h2>
-      <div class="demo">
-        <label class="f-checkbox"><input type="checkbox" checked><span class="f-checkbox__box"><svg><use href="#i-check"/></svg></span>Checked</label>
-        <label class="f-checkbox"><input type="checkbox"><span class="f-checkbox__box"><svg><use href="#i-check"/></svg></span>Unchecked</label>
-        <label class="f-checkbox"><input type="checkbox" class="js-indeterminate"><span class="f-checkbox__box"><svg><use href="#i-check"/></svg></span>Indeterminate</label>
-        <label class="f-checkbox f-checkbox--circular"><input type="checkbox" checked><span class="f-checkbox__box"><svg><use href="#i-check"/></svg></span>Circular</label>
-        <label class="f-checkbox is-disabled"><input type="checkbox" disabled><span class="f-checkbox__box"><svg><use href="#i-check"/></svg></span>Disabled</label>
-      </div>
-      <div class="demo">
-        <div class="f-radio-group f-radio-group--horizontal" role="radiogroup">
-          <label class="f-radio"><input type="radio" name="r" checked><span class="f-radio__dot"></span>Daily</label>
-          <label class="f-radio"><input type="radio" name="r"><span class="f-radio__dot"></span>Weekly</label>
-          <label class="f-radio"><input type="radio" name="r"><span class="f-radio__dot"></span>Monthly</label>
+  <section class="section">
+    <div class="section__head"><h2 class="text-subtitle-1">Reference</h2></div>
+    <div class="cards cards--single">
+      <a class="f-card f-card--interactive card" href="gallery.html">
+        <div class="card__art">
+          <svg viewBox="0 0 600 92" role="img" aria-label="Rows of color swatches above sample components">
+            <g>
+              <rect class="art-brand" x="16" y="16" width="34" height="26" rx="3"/>
+              <rect class="art-fg" x="58" y="16" width="34" height="26" rx="3" opacity=".55"/>
+              <rect class="art-muted" x="100" y="16" width="34" height="26" rx="3"/>
+              <rect class="art-brand" x="142" y="16" width="34" height="26" rx="3" opacity=".45"/>
+              <rect class="art-fg" x="184" y="16" width="34" height="26" rx="3" opacity=".25"/>
+              <rect class="art-muted" x="226" y="16" width="34" height="26" rx="3" opacity=".7"/>
+            </g>
+            <rect class="art-brand" x="16" y="56" width="74" height="22" rx="4"/>
+            <rect class="art-surface" x="98" y="56" width="74" height="22" rx="4" stroke="currentColor" stroke-opacity=".25"/>
+            <rect class="art-muted" x="180" y="64" width="120" height="6" rx="3"/>
+            <circle class="art-brand" cx="320" cy="67" r="9"/>
+            <rect class="art-muted" x="340" y="64" width="90" height="6" rx="3"/>
+          </svg>
         </div>
-        <label class="f-switch"><input type="checkbox" checked><span class="f-switch__track"></span>Notifications</label>
-        <label class="f-switch"><input type="checkbox"><span class="f-switch__track"></span>Auto-save</label>
-      </div>
-    </section>
+        <div>
+          <span class="card__title text-body-1-strong">Design system gallery</span>
+          <p class="card__desc text-body-1">Every token and component in one page. Search the colors by name, compare both themes with the toggle, and see each component's variants rendered live.</p>
+        </div>
+        <div class="card__tags">
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">Tokens</span>
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">Type ramp</span>
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">Components</span>
+        </div>
+      </a>
+    </div>
+  </section>
 
-    <section id="badge">
-      <h2 class="text-title-3">Badge, tag, avatar</h2>
-      <div class="demo" id="badgeMatrix" style="flex-direction:column;align-items:flex-start"></div>
-      <div class="demo">
-        <span class="f-tag">Filled tag</span>
-        <span class="f-tag f-tag--outline">Outline</span>
-        <span class="f-tag f-tag--brand">Brand</span>
-        <button class="f-tag is-selected">Selected</button>
-        <span class="f-tag f-tag--small f-tag--circular">Small<button class="f-tag__dismiss" aria-label="Remove"><svg class="f-icon f-icon--16"><use href="#i-dismiss"/></svg></button></span>
-        <span class="f-tag"><span class="f-avatar f-avatar--purple" style="--size:20px">KL</span>Kat Larson<button class="f-tag__dismiss" aria-label="Remove"><svg class="f-icon f-icon--16"><use href="#i-dismiss"/></svg></button></span>
-      </div>
-      <div class="demo">
-        <span class="f-avatar" style="--size:24px">AB</span>
-        <span class="f-avatar f-avatar--blue">CD<span class="f-presence f-presence--available"></span></span>
-        <span class="f-avatar f-avatar--marigold" style="--size:40px">EF<span class="f-presence f-presence--away"></span></span>
-        <span class="f-avatar f-avatar--forest" style="--size:48px">GH<span class="f-presence f-presence--busy"></span></span>
-        <span class="f-avatar f-avatar--brand f-avatar--square" style="--size:56px">IJ</span>
-        <span class="f-avatar-group"><span class="f-avatar f-avatar--red">A</span><span class="f-avatar f-avatar--teal">B</span><span class="f-avatar f-avatar--pink">C</span><span class="f-avatar">+4</span></span>
-        <span class="f-persona"><span class="f-avatar f-avatar--cornflower" style="--size:40px">MS<span class="f-presence f-presence--available"></span></span><span><div class="f-persona__name">Mona Kane</div><div class="f-persona__secondary">Available · Product designer</div></span></span>
-      </div>
-    </section>
+  <section class="section">
+    <div class="section__head"><h2 class="text-subtitle-1">Examples</h2><span class="section__count text-caption-1">3 mocks</span></div>
+    <div class="cards">
 
-    <section id="card">
-      <h2 class="text-title-3">Card</h2>
-      <p class="lede">Styles: Filled (default), Filled alt, Outline, Subtle. Padding: small 8, medium 12, large 16.</p>
-      <div class="demo" style="background:var(--colorNeutralBackground2);align-items:stretch">
-        <div class="f-card f-card--interactive" style="width:280px" tabindex="0">
-          <div class="f-card__header"><span class="f-avatar f-avatar--brand f-avatar--square"><svg class="f-icon"><use href="#i-doc"/></svg></span>
-            <div class="f-card__header-text"><div class="f-card__title">Quarterly report.docx</div><div class="f-card__subtitle">Edited 2h ago by Mona Kane</div></div>
-            <button class="f-button f-button--icon f-button--transparent" aria-label="More"><svg class="f-icon"><use href="#i-more"/></svg></button></div>
-          <div class="f-text-secondary">Summary of revenue, usage and key milestones for Q3.</div>
-          <div class="f-card__footer"><button class="f-button f-button--primary">Open</button><button class="f-button">Share</button></div>
+      <a class="f-card f-card--interactive card" href="examples/sketchup-fluent/">
+        <div class="card__art">
+          <svg viewBox="0 0 300 116" role="img" aria-label="Desktop app window with a toolbar, side panel and canvas">
+            <rect class="art-surface" x="10" y="10" width="280" height="96" rx="4" stroke="currentColor" stroke-opacity=".2"/>
+            <rect class="art-muted" x="10" y="10" width="280" height="14" rx="4"/>
+            <g class="art-fg" opacity=".6">
+              <rect x="20" y="31" width="9" height="9" rx="2"/><rect x="33" y="31" width="9" height="9" rx="2"/>
+              <rect x="46" y="31" width="9" height="9" rx="2"/><rect x="59" y="31" width="9" height="9" rx="2"/>
+              <rect x="72" y="31" width="9" height="9" rx="2"/>
+            </g>
+            <rect class="art-brand" x="85" y="31" width="9" height="9" rx="2"/>
+            <rect class="art-muted" x="20" y="48" width="188" height="50" rx="3"/>
+            <rect class="art-surface" x="216" y="48" width="64" height="50" rx="3" stroke="currentColor" stroke-opacity=".2"/>
+            <rect class="art-muted" x="222" y="54" width="52" height="5" rx="2"/>
+            <rect class="art-muted" x="222" y="64" width="38" height="5" rx="2"/>
+            <rect class="art-brand" x="222" y="74" width="24" height="5" rx="2"/>
+          </svg>
         </div>
-        <div class="f-card f-card--outline" style="width:240px"><div class="f-card__title">Outline</div><div class="f-text-secondary">Lower emphasis, no shadow.</div></div>
-        <div class="f-card f-card--filled-alt" style="width:240px"><div class="f-card__title">Filled alt</div><div class="f-text-secondary">Sits on a white surface.</div></div>
-      </div>
-    </section>
+        <div>
+          <span class="card__title text-body-1-strong">SketchUp desktop window</span>
+          <p class="card__desc text-body-1">The SketchUp 2027 UI rebuilt on Fluent: a command bar with tool fly-outs, document tabs, the Default Tray panels and a status bar that tracks the active tool.</p>
+        </div>
+        <div class="card__tags">
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">App shell</span>
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">144 icons</span>
+        </div>
+      </a>
 
-    <section id="navigation">
-      <h2 class="text-title-3">Tabs, nav, breadcrumb</h2>
-      <div class="demo demo--col">
-        <div class="f-tablist" role="tablist">
-          <button class="f-tab" role="tab" aria-selected="true"><svg class="f-icon"><use href="#i-home"/></svg>Overview</button>
-          <button class="f-tab" role="tab"><svg class="f-icon"><use href="#i-doc"/></svg>Files</button>
-          <button class="f-tab" role="tab"><svg class="f-icon"><use href="#i-settings"/></svg>Settings</button>
-          <button class="f-tab" role="tab" aria-disabled="true">Disabled</button>
+      <a class="f-card f-card--interactive card" href="examples/hatch-scale/">
+        <div class="card__art">
+          <svg viewBox="0 0 300 116" role="img" aria-label="Two sliders with number fields and a link button between them">
+            <rect class="art-surface" x="10" y="10" width="280" height="96" rx="4" stroke="currentColor" stroke-opacity=".2"/>
+            <rect class="art-muted" x="24" y="26" width="52" height="6" rx="3"/>
+            <rect class="art-muted" x="24" y="44" width="170" height="3" rx="1.5"/>
+            <rect class="art-brand" x="24" y="44" width="68" height="3" rx="1.5"/>
+            <circle class="art-brand" cx="92" cy="45.5" r="7"/>
+            <rect class="art-surface" x="206" y="36" width="60" height="20" rx="4" stroke="currentColor" stroke-opacity=".25"/>
+            <rect class="art-muted" x="240" y="44" width="20" height="4" rx="2"/>
+            <rect class="art-muted" x="24" y="68" width="52" height="6" rx="3"/>
+            <rect class="art-muted" x="24" y="86" width="170" height="3" rx="1.5"/>
+            <rect class="art-brand" x="24" y="86" width="122" height="3" rx="1.5"/>
+            <circle class="art-brand" cx="146" cy="87.5" r="7"/>
+            <rect class="art-surface" x="206" y="78" width="60" height="20" rx="4" stroke="currentColor" stroke-opacity=".25"/>
+            <rect class="art-muted" x="240" y="86" width="20" height="4" rx="2"/>
+          </svg>
         </div>
-        <div class="f-tablist f-tablist--circular" role="tablist">
-          <button class="f-tab" role="tab" aria-selected="true">All</button><button class="f-tab" role="tab">Shared</button><button class="f-tab" role="tab">Favorites</button>
+        <div>
+          <span class="card__title text-body-1-strong">Hatch scale controls</span>
+          <p class="card__desc text-body-1">Six layouts for scaling a hatch pattern, from stacked sliders to one slider that splits in two. All six work: drag, type an exact value, or lock the aspect ratio.</p>
         </div>
-        <ol class="f-breadcrumb">
-          <li class="f-breadcrumb__item"><a href="#">Home</a></li><li class="f-breadcrumb__divider"><svg class="f-icon f-icon--16"><use href="#i-chevron-right"/></svg></li>
-          <li class="f-breadcrumb__item"><a href="#">Projects</a></li><li class="f-breadcrumb__divider"><svg class="f-icon f-icon--16"><use href="#i-chevron-right"/></svg></li>
-          <li class="f-breadcrumb__item" aria-current="page">Site redesign</li>
-        </ol>
-        <div class="f-toolbar f-toolbar--floating" style="align-self:flex-start">
-          <button class="f-button f-button--subtle f-button--icon" aria-label="Add"><svg class="f-icon"><use href="#i-add"/></svg></button>
-          <button class="f-button f-button--subtle f-button--icon" aria-label="Search"><svg class="f-icon"><use href="#i-search"/></svg></button>
-          <span class="f-toolbar__divider"></span>
-          <button class="f-button f-button--subtle">Share</button>
-          <button class="f-button f-button--subtle f-button--icon" aria-label="More"><svg class="f-icon"><use href="#i-more"/></svg></button>
+        <div class="card__tags">
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">Sliders</span>
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">Interactive</span>
         </div>
-      </div>
-    </section>
+      </a>
 
-    <section id="feedback">
-      <h2 class="text-title-3">Feedback</h2>
-      <div class="demo demo--col">
-        <div class="f-messagebar"><svg class="f-icon"><use href="#i-info"/></svg><div class="f-messagebar__body"><span class="f-messagebar__title">Heads up</span>A new version is available.</div><div class="f-messagebar__actions"><button class="f-button f-button--small">Update</button><button class="f-button f-button--transparent f-button--icon f-button--small" aria-label="Dismiss"><svg class="f-icon f-icon--16"><use href="#i-dismiss"/></svg></button></div></div>
-        <div class="f-messagebar f-messagebar--success"><svg class="f-icon"><use href="#i-success"/></svg><div class="f-messagebar__body"><span class="f-messagebar__title">Saved</span>Your changes were published.</div></div>
-        <div class="f-messagebar f-messagebar--warning"><svg class="f-icon"><use href="#i-warning"/></svg><div class="f-messagebar__body"><span class="f-messagebar__title">Storage almost full</span>You've used 92% of your quota.</div></div>
-        <div class="f-messagebar f-messagebar--error"><svg class="f-icon"><use href="#i-error"/></svg><div class="f-messagebar__body"><span class="f-messagebar__title">Sync failed</span>Check your connection and try again.</div></div>
-      </div>
-      <div class="demo" style="background:var(--colorNeutralBackground2);align-items:flex-start;gap:24px">
-        <div class="f-toast"><svg class="f-icon is-success"><use href="#i-success"/></svg><div class="f-toast__title">File uploaded</div><button class="f-button f-button--transparent f-button--icon f-button--small" aria-label="Dismiss"><svg class="f-icon f-icon--16"><use href="#i-dismiss"/></svg></button><div class="f-toast__body f-toast__subtitle">report-final.pdf · 2.4 MB</div><div class="f-toast__footer"><button class="f-link">View</button><button class="f-link">Undo</button></div></div>
-        <div class="f-stack" style="width:280px;--gap:16px">
-          <div class="f-progress"><div class="f-progress__bar" style="--value:45%"></div></div>
-          <div class="f-progress f-progress--large f-progress--success"><div class="f-progress__bar" style="--value:100%"></div></div>
-          <div class="f-progress f-progress--indeterminate"><div class="f-progress__bar"></div></div>
-          <div class="f-row" style="--gap:16px"><span class="f-spinner f-spinner--tiny"></span><span class="f-spinner">Loading…</span></div>
+      <a class="f-card f-card--interactive card" href="examples/plg-onboarding/multiplayer-walkthrough.html">
+        <div class="card__art">
+          <svg viewBox="0 0 300 116" role="img" aria-label="A dialog with a hero band, text and step dots">
+            <rect class="art-muted" x="10" y="10" width="280" height="96" rx="4" opacity=".5"/>
+            <rect class="art-surface" x="54" y="20" width="192" height="76" rx="4" stroke="currentColor" stroke-opacity=".2"/>
+            <rect class="art-brand" x="54" y="20" width="192" height="24" rx="4" opacity=".18"/>
+            <circle class="art-brand" cx="150" cy="32" r="7" opacity=".8"/>
+            <rect class="art-muted" x="66" y="54" width="40" height="5" rx="2.5"/>
+            <rect class="art-muted" x="66" y="64" width="110" height="5" rx="2.5"/>
+            <g class="art-muted"><circle cx="72" cy="86" r="3"/><circle cx="84" cy="86" r="3"/></g>
+            <rect class="art-brand" x="56" y="83" width="12" height="6" rx="3"/>
+            <rect class="art-brand" x="196" y="78" width="40" height="14" rx="3"/>
+          </svg>
         </div>
-        <div class="f-stack" style="width:240px;--gap:8px"><div class="f-row"><span class="f-skeleton f-skeleton--circle"></span><span class="f-skeleton" style="flex:1"></span></div><span class="f-skeleton"></span><span class="f-skeleton" style="width:60%"></span></div>
-        <div class="f-step-dots" aria-label="Steps"><button class="f-step-dot" aria-label="Step 1"></button><button class="f-step-dot" aria-current="step" aria-label="Step 2"></button><button class="f-step-dot" aria-label="Step 3"></button></div>
-        <div class="f-rating f-rating--marigold" aria-label="4 of 5 stars"><svg class="f-icon"><use href="#i-star"/></svg><svg class="f-icon"><use href="#i-star"/></svg><svg class="f-icon"><use href="#i-star"/></svg><svg class="f-icon"><use href="#i-star"/></svg><svg class="f-icon is-empty"><use href="#i-star"/></svg></div>
-      </div>
-    </section>
+        <div>
+          <span class="card__title text-body-1-strong">Feature walkthrough</span>
+          <p class="card__desc text-body-1">A three-step onboarding dialog with step dots, Back and Next, and a Help Center link card. Add <code>?step=2</code> to the URL to open on a given step.</p>
+        </div>
+        <div class="card__tags">
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">Dialog</span>
+          <span class="f-badge f-badge--subtle-color f-badge--outline f-badge--rounded f-badge--small">Onboarding</span>
+        </div>
+      </a>
 
-    <section id="overlays">
-      <h2 class="text-title-3">Dialog, menu, popover</h2>
-      <div class="demo" style="background:var(--colorNeutralBackgroundOverlay);align-items:flex-start;gap:24px;padding:32px">
-        <div class="f-dialog" style="width:420px" role="dialog" aria-labelledby="dlgTitle">
-          <h2 class="f-dialog__title" id="dlgTitle"><span>Delete project?</span><button class="f-button f-button--subtle f-button--icon" aria-label="Close"><svg class="f-icon"><use href="#i-dismiss"/></svg></button></h2>
-          <div class="f-dialog__body">“Site redesign” and its 24 files will be permanently removed. You can't undo this.</div>
-          <div class="f-dialog__actions"><button class="f-button">Cancel</button><button class="f-button f-button--primary">Delete</button></div>
-        </div>
-        <div class="f-menu" role="menu">
-          <div class="f-menu__section-header">Actions</div>
-          <button class="f-menu-item" role="menuitem"><svg class="f-icon"><use href="#i-add"/></svg><span class="f-menu-item__label">New file</span><span class="f-menu-item__shortcut">Ctrl+N</span></button>
-          <button class="f-menu-item" role="menuitem"><svg class="f-icon"><use href="#i-doc"/></svg><span class="f-menu-item__label">Duplicate</span></button>
-          <div class="f-menu__divider"></div>
-          <button class="f-menu-item" role="menuitem"><svg class="f-icon"><use href="#i-settings"/></svg><span class="f-menu-item__label">Settings</span></button>
-          <button class="f-menu-item" role="menuitem" aria-disabled="true"><svg class="f-icon"><use href="#i-dismiss"/></svg><span class="f-menu-item__label">Delete</span></button>
-        </div>
-        <div class="f-stack">
-          <div class="f-popover"><div class="f-popover__title">Popover</div>Additional context for an element.</div>
-          <div class="f-popover f-popover--brand"><div class="f-popover__title">Teaching popover</div>New: share with your team.</div>
-          <div class="f-row"><span class="f-tooltip">Tooltip</span><span class="f-tooltip f-tooltip--inverted">Inverted</span><span class="f-tooltip f-tooltip--brand">Brand</span></div>
-        </div>
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="data">
-      <h2 class="text-title-3">Table, list, tree</h2>
-      <div class="demo demo--col">
-        <table class="f-table">
-          <thead><tr><th>Name</th><th>Owner</th><th>Status</th><th>Modified</th></tr></thead>
-          <tbody>
-            <tr><td><span class="f-table__cell-media"><svg class="f-icon"><use href="#i-doc"/></svg>Roadmap.pptx</span></td><td><span class="f-persona"><span class="f-avatar f-avatar--teal" style="--size:24px">JD</span>Jordan Diaz</span></td><td><span class="f-badge f-badge--success f-badge--tint f-badge--rounded">Published</span></td><td class="f-text-secondary">Today</td></tr>
-            <tr class="is-selected"><td><span class="f-table__cell-media"><svg class="f-icon"><use href="#i-doc"/></svg>Budget.xlsx</span></td><td><span class="f-persona"><span class="f-avatar f-avatar--pink" style="--size:24px">AR</span>Ana Ruiz</span></td><td><span class="f-badge f-badge--warning f-badge--tint f-badge--rounded">In review</span></td><td class="f-text-secondary">Yesterday</td></tr>
-            <tr><td><span class="f-table__cell-media"><svg class="f-icon"><use href="#i-doc"/></svg>Notes.docx</span></td><td><span class="f-persona"><span class="f-avatar f-avatar--steel" style="--size:24px">LK</span>Lee Kim</span></td><td><span class="f-badge f-badge--informative f-badge--tint f-badge--rounded">Draft</span></td><td class="f-text-secondary">Oct 2</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="demo" style="align-items:flex-start;gap:32px">
-        <ul class="f-list" style="width:280px">
-          <li class="f-list-item f-list-item--interactive"><span class="f-avatar f-avatar--purple">MK</span><div><div>Mona Kane</div><div class="f-list-item__secondary">Design lead</div></div></li>
-          <li class="f-list-item f-list-item--interactive is-active"><span class="f-avatar f-avatar--forest">TS</span><div><div>Tim Sato</div><div class="f-list-item__secondary">Engineer</div></div></li>
-        </ul>
-        <ul class="f-tree" style="width:240px">
-          <li class="f-tree-item"><svg class="f-icon f-icon--16"><use href="#i-chevron-down"/></svg>Documents</li>
-          <li class="f-tree-item is-selected" style="--level:1"><svg class="f-icon f-icon--16"><use href="#i-doc"/></svg>Specs</li>
-          <li class="f-tree-item" style="--level:1"><svg class="f-icon f-icon--16"><use href="#i-doc"/></svg>Research</li>
-        </ul>
-        <div class="f-accordion" style="width:320px">
-          <details open><summary>Accordion header</summary><div class="f-accordion__panel f-text-secondary">Panel content goes here.</div></details>
-          <details><summary>Second item</summary><div class="f-accordion__panel f-text-secondary">More content.</div></details>
-        </div>
-      </div>
-    </section>
-  </main>
+  <footer class="colophon text-caption-1">
+    <p>Tokens and component specs come from the <a class="f-link" href="https://www.figma.com/design/X5qiNutiFaiAwk6CJ7aPA8/Microsoft-Fluent-2-Web--Community-">Microsoft Fluent 2 Web (Community)</a> Figma file. Fluent, Fluent 2 and Segoe UI are Microsoft's; this project only re-expresses the published design values as CSS, and is not affiliated with or endorsed by Microsoft. Segoe UI is not redistributed here — the font stack falls back to the system UI font.</p>
+    <p>The SketchUp icons in that example are Trimble's artwork, included only so the example renders. See the <a class="f-link" href="https://github.com/salvatorereda/fluent-2-web-design-system#readme">README</a> for the full token and class reference.</p>
+  </footer>
+
 </div>
 
-<script src="tokens/tokens.js"></script>
 <script>
-(function () {
-  const T = window.FLUENT_TOKENS;
-  const root = document.documentElement;
-  try { const saved = localStorage.getItem('f2-theme'); if (saved) root.dataset.theme = saved; } catch (e) {}
-  document.querySelectorAll('[data-set-theme]').forEach(b => b.addEventListener('click', () => {
-    root.dataset.theme = b.dataset.setTheme;
-    try { localStorage.setItem('f2-theme', b.dataset.setTheme); } catch (e) {}
-  }));
-  document.querySelectorAll('.js-indeterminate').forEach(el => el.indeterminate = true);
-
-  // Color swatches grouped by the first two Figma path segments
-  const groups = {};
-  for (const [name, t] of Object.entries(T.color)) {
-    const seg = t.figma.split('/');
-    const g = seg[0] === 'Palette' ? 'Palette' : seg.slice(0, 2).join(' / ');
-    (groups[g] = groups[g] || []).push([name, t]);
-  }
-  const host = document.getElementById('colorGroups');
-  const sw = (name, sub) => `<div class="swatch" data-name="${name.toLowerCase()} ${sub.toLowerCase()}"><i style="background:var(--${name})"></i><span style="min-width:0"><code>--${name}</code><small>${sub}</small></span></div>`;
-  host.innerHTML = Object.entries(groups).map(([g, items]) =>
-    `<div class="color-group"><div class="group-title">${g} <small class="f-text-tertiary">(${items.length})</small></div><div class="swatches">${items.map(([n, t]) => sw(n, t.light + ' / ' + t.dark)).join('')}</div></div>`).join('');
-  document.getElementById('brandRamp').innerHTML = Object.entries(T.brandRamp).map(([n, v]) => sw(n, v)).join('');
-  document.getElementById('tokenFilter').addEventListener('input', e => {
-    const q = e.target.value.trim().toLowerCase();
-    host.querySelectorAll('.swatch').forEach(s => s.style.display = !q || s.dataset.name.includes(q) ? '' : 'none');
-    host.querySelectorAll('.color-group').forEach(g => g.style.display = [...g.querySelectorAll('.swatch')].some(s => s.style.display !== 'none') ? '' : 'none');
-  });
-
-  document.getElementById('typeRamp').innerHTML = T.typography.styles.slice().reverse().map(s =>
-    `<div class="type-row"><code>.${s.class}<br>${T.typography.tokens['fontSize' + s.size]} / ${T.typography.tokens['lineHeight' + s.lineHeight]} · ${s.weight}</code><span class="${s.class}">${s.name}</span></div>`).join('');
-
-  const sp = Object.entries(T.layout).filter(([k]) => k.startsWith('spacingHorizontal'));
-  document.getElementById('spacingScale').innerHTML = sp.map(([k, v]) => `<div><b style="width:${v};height:${v};min-width:1px;min-height:1px"></b>${k.replace('spacingHorizontal', '')}<br>${v}</div>`).join('');
-  const rd = Object.entries(T.layout).filter(([k]) => k.startsWith('borderRadius'));
-  document.getElementById('radiusScale').innerHTML = rd.map(([k, v]) => `<div><b style="width:56px;height:56px;border-radius:var(--${k})"></b>${k.replace('borderRadius', '')}<br>${v}</div>`).join('');
-
-  const colors = ['brand', 'danger', 'important', 'informative', 'severe', 'subtle-color', 'success', 'warning'];
-  const apps = ['filled', 'tint', 'outline', 'subtle'];
-  document.getElementById('badgeMatrix').innerHTML = apps.map(a =>
-    `<div class="f-row"><code style="width:70px;font-size:12px">${a}</code>${colors.map(c => `<span class="f-badge f-badge--${c} ${a === 'filled' ? '' : 'f-badge--' + a}">${c.replace('-color', '')}</span>`).join('')}</div>`).join('') +
-    `<div class="f-row"><code style="width:70px;font-size:12px">sizes</code><span class="f-badge f-badge--small">1</span><span class="f-badge">2</span><span class="f-badge f-badge--large">3</span><span class="f-badge f-badge--xlarge">99+</span><span class="f-badge f-badge--rounded">Rounded</span><span class="f-presence f-presence--available"></span><span class="f-presence f-presence--busy"></span><span class="f-presence f-presence--away"></span><span class="f-presence f-presence--oof"></span><span class="f-presence f-presence--offline"></span></div>`;
-})();
+  // Follows the OS by default; the toggle overrides it and is remembered per browser.
+  (function () {
+    var root = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)');
+    var isDark = function () { return root.dataset.theme ? root.dataset.theme === 'dark' : mq.matches; };
+    try { var saved = localStorage.getItem('f2-theme'); if (saved) root.dataset.theme = saved; } catch (e) {}
+    var btn = document.getElementById('theme');
+    var label = function () { btn.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme'); };
+    btn.addEventListener('click', function () {
+      root.dataset.theme = isDark() ? 'light' : 'dark';
+      try { localStorage.setItem('f2-theme', root.dataset.theme); } catch (e) {}
+      label();
+    });
+    label();
+  })();
 </script>
 </body>
 </html>
