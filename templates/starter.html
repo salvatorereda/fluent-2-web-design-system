@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New mock</title>
+<!-- Fluent 2 Web design system. Keep these paths relative to where the mock lives. -->
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../components/fluent.css">
+<style>
+  /* App shell: side nav + header + content. Delete what you don't need. */
+  .app { display: grid; grid-template-columns: auto 1fr; height: 100vh; }
+  .app__main { display: flex; flex-direction: column; min-width: 0; }
+  .app__header { display: flex; align-items: center; gap: var(--spacingHorizontalM); height: 48px; padding: 0 var(--spacingHorizontalL);
+    background: var(--colorNeutralBackground1); border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .app__content { flex: 1; overflow: auto; padding: var(--spacingVerticalXXL) var(--spacingHorizontalXXL); }
+</style>
+</head>
+<body class="f-root">
+<div class="app">
+  <nav class="f-nav" aria-label="Main">
+    <div class="f-nav__header"><span class="f-avatar f-avatar--brand f-avatar--square" style="--size:28px">A</span>App name</div>
+    <a class="f-nav-item" href="#" aria-current="page">Home</a>
+    <a class="f-nav-item" href="#">Projects</a>
+    <a class="f-nav-item" href="#">Reports</a>
+    <div class="f-nav__section">Workspace</div>
+    <a class="f-nav-item" href="#">Settings</a>
+  </nav>
+
+  <div class="app__main">
+    <header class="app__header">
+      <span class="f-searchbox" style="width:320px"><input placeholder="Search"></span>
+      <span class="f-spacer"></span>
+      <button class="f-button f-button--primary">New</button>
+      <span class="f-avatar f-avatar--blue">MK</span>
+    </header>
+
+    <main class="app__content f-stack" style="--gap:var(--spacingVerticalXL)">
+      <div class="f-row">
+        <h1 class="text-title-2" style="margin:0">Page title</h1>
+        <span class="f-spacer"></span>
+        <button class="f-button">Secondary action</button>
+      </div>
+
+      <div class="f-card">
+        <div class="f-card__header"><div class="f-card__header-text"><div class="f-card__title">Card title</div><div class="f-card__subtitle">Supporting text</div></div></div>
+        <p style="margin:0" class="f-text-secondary">Start building here.</p>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
