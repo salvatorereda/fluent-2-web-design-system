@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24" fill="none" overflow="visible"><svg x="0.000" y="0.000" width="24.000" height="24.000" viewBox="0 0 24 24" preserveAspectRatio="none" overflow="visible">
+<g id="l0-Eraser_DM">
+<g id="l0-eraser componment">
+<g id="l0-Rectangle 476">
+<path d="M14.1671 1.99999L21.2383 9.07119L10.1925 20.117C9.02094 21.2885 7.12145 21.2885 5.94988 20.117L0.999999 15.1671L14.1671 1.99999Z" fill="#353A40"/>
+<mask id="l0-stroke0_0_3686" fill="white">
+<path d="M14.1671 1.99999L21.2383 9.07119L10.1925 20.117C9.02094 21.2885 7.12145 21.2885 5.94988 20.117L0.999999 15.1671L14.1671 1.99999Z"/>
+</mask>
+<path d="M14.1671 1.99999L21.2383 9.07119L10.1925 20.117C9.02094 21.2885 7.12145 21.2885 5.94988 20.117L0.999999 15.1671L14.1671 1.99999Z" stroke-width="2" stroke="#DCEDF9" mask="url(#l0-stroke0_0_3686)"/>
+</g>
+<path id="l0-Line 24 (Stroke)" d="M16.0689 12.8262L10.4121 7.16937L10.9424 6.63904L16.5992 12.2959L16.0689 12.8262Z" fill-rule="evenodd" clip-rule="evenodd" fill="#DCEDF9"/>
+<path id="l0-Line 24 (Stroke)_2" d="M11.2959 17.5992L5.63907 11.9424L6.1694 11.412L11.8262 17.0689L11.2959 17.5992Z" fill-rule="evenodd" clip-rule="evenodd" fill="#DCEDF9"/>
+<rect id="l0-Rectangle 3616" x="6.1694" y="11.412" width="6" height="8" transform="rotate(-45 6.1694 11.412)" fill="#009AD9"/>
+</g>
+<path id="l0-line" d="M3.48687 22L20.9869 22" stroke-linecap="round" stroke="#DCEDF9"/>
+</g>
+</svg></svg>

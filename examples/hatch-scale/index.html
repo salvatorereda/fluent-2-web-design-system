@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hatch Scale Controls</title>
+<!-- Six layouts for the Hatch Patterns panel: X/Y scale sliders + input fields + chain-link (aspect ratio) indicator.
+     Based on the 10/29/26 sketch. Built on Fluent 2 Web. -->
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="../../components/fluent.css">
+<style>
+  .page { max-width: 1240px; margin: 0 auto; padding: var(--spacingVerticalXXXL) max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); }
+  .page__head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--spacingHorizontalL); margin-bottom: var(--spacingVerticalXXL); }
+  .page__head h1 { margin: 0; }
+  .page__head p { margin: var(--spacingVerticalXS) 0 0; max-width: 640px; color: var(--colorNeutralForeground2); }
+  .variants { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: var(--spacingHorizontalXXL); }
+
+  .variant { display: flex; flex-direction: column; gap: var(--spacingVerticalM); min-width: 0; }
+  .variant__head { display: flex; align-items: flex-start; gap: var(--spacingHorizontalM); }
+  .variant__num { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+    border: var(--strokeWidthThin) solid var(--colorNeutralStroke1); font-weight: var(--fontWeightSemibold); color: var(--colorNeutralForeground2); }
+  .variant__title { margin: 0; }
+  .variant__note { margin: var(--spacingVerticalXXS) 0 0; color: var(--colorNeutralForeground3); }
+
+  /* Hatch panel: what sits in the SketchUp tray */
+  .panel { padding: var(--spacingVerticalL) var(--spacingHorizontalL); gap: var(--spacingVerticalL); }
+  .hatch-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: var(--spacingHorizontalM); align-items: center; }
+  .hatch-thumb { width: 56px; height: 56px; border-radius: var(--borderRadiusMedium); border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    background: var(--colorNeutralBackground1); overflow: hidden; }
+  .hatch-thumb svg { display: block; width: 100%; height: 100%; }
+  .hatch-meta { min-width: 0; display: flex; flex-direction: column; gap: var(--spacingVerticalXXS); }
+  .hatch-meta__name { display: flex; align-items: center; gap: var(--spacingHorizontalXS); font-weight: var(--fontWeightSemibold); }
+  .hatch-meta__name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hatch-meta__file { color: var(--colorNeutralForeground3); font-size: var(--fontSizeBase200); line-height: var(--lineHeightBase200); }
+  .hatch-actions { display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacingVerticalXXS); }
+  .hatch-actions .f-switch { padding: var(--spacingVerticalXXS) 0; }
+
+  .row { display: flex; align-items: center; justify-content: space-between; gap: var(--spacingHorizontalM); }
+  .num { width: 88px; }
+  .num input { text-align: right; font-variant-numeric: tabular-nums; }
+  .num--wide { width: 104px; }
+  .num__suffix { color: var(--colorNeutralForeground3); padding-right: var(--spacingHorizontalXS); }
+  .lock { padding: 0; }
+
+  /* Slider block: optional label row, rail, Fine/Coarse captions */
+  .scale { display: flex; flex-direction: column; gap: var(--spacingVerticalXXS); min-width: 0; }
+  .scale__ends { display: flex; justify-content: space-between; font-size: var(--fontSizeBase100); line-height: var(--lineHeightBase100);
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--colorNeutralForeground3); }
+  .scale.is-disabled .f-label, .scale.is-disabled .scale__ends { color: var(--colorNeutralForegroundDisabled); }
+  .slider-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--spacingHorizontalM); align-items: center; }
+
+  /* Chain link toggle */
+  .chain { color: var(--colorNeutralForeground3); }
+  .chain[aria-pressed="true"] { color: var(--colorBrandForeground1); background: var(--colorBrandBackground2); }
+  .chain svg { width: 20px; height: 20px; }
+  .chain .i-unlinked { display: none; }
+  .chain[aria-pressed="false"] .i-linked { display: none; }
+  .chain[aria-pressed="false"] .i-unlinked { display: block; }
+
+  /* V1: inputs in a right-hand column joined by a bracket with the chain in the middle */
+  .v1 { display: grid; grid-template-columns: minmax(0, 1fr) 88px; column-gap: var(--spacingHorizontalM); row-gap: var(--spacingVerticalXS); align-items: center; }
+  .v1 .bracket { grid-column: 2; display: flex; justify-content: center; position: relative; height: 40px; }
+  .v1 .bracket::before { content: ""; position: absolute; top: -4px; bottom: -4px; left: 50%; border-left: var(--strokeWidthThin) solid var(--_bracket, var(--colorNeutralStroke1)); }
+  .v1 .bracket .chain { position: relative; background: var(--colorNeutralBackground1); }
+  .v1 .bracket .chain[aria-pressed="true"] { background: var(--colorBrandBackground2); }
+  .v1:has(.chain[aria-pressed="true"]) .bracket { --_bracket: var(--colorBrandStroke1); }
+
+  /* V3 / V4: X and Y side by side with the chain between them */
+  .pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--spacingHorizontalS); align-items: center; }
+  .pair__inputs { display: grid; grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr); gap: var(--spacingHorizontalS); align-items: center; }
+  .pair__inputs .f-field { min-width: 0; }
+  .pair__inputs .f-input { width: 100%; }
+  .xy-label { display: flex; align-items: center; gap: var(--spacingHorizontalS); }
+  .xy-label .f-input { flex: 1; min-width: 0; }
+
+  /* V6: unified slider that splits in two when the ratio is unlocked */
+  .split { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--durationNormal) var(--curveEasyEase); }
+  .split > div { overflow: hidden; min-height: 0; }
+  .split.is-collapsed { grid-template-rows: 0fr; }
+  .xy-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacingHorizontalM); }
+  .xy-inputs .f-input { width: 100%; }
+
+  @media (prefers-reduced-motion: reduce) { .split { transition: none; } }
+</style>
+</head>
+<body class="f-root">
+<div class="page">
+  <header class="page__head">
+    <div>
+      <h1 class="text-title-2">Hatch Scale Controls</h1>
+      <p class="text-body-1">Six layouts for scaling a hatch pattern in the Hatch Patterns panel. Each one pairs X/Y sliders (fine to coarse) with exact number fields and a way to keep the aspect ratio. Drag, type, or toggle the link to try them. The thumbnail redraws the pattern as you go.</p>
+    </div>
+  </header>
+  <div class="variants" id="variants"></div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-info" viewBox="0 0 20 20"><path fill="currentColor" d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm0 1a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm0 5.5c.28 0 .5.22.5.5v4.5a.5.5 0 0 1-1 0V9c0-.28.22-.5.5-.5Zm0-2.25a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5Z"/></symbol>
+  <symbol id="i-delete" viewBox="0 0 20 20"><path fill="currentColor" d="M8.5 4h3a1.5 1.5 0 0 0-3 0Zm-1 0a2.5 2.5 0 0 1 5 0h5a.5.5 0 0 1 0 1h-1.05l-1.2 10.34A3 3 0 0 1 12.27 18H7.73a3 3 0 0 1-2.98-2.66L3.55 5H2.5a.5.5 0 0 1 0-1h5ZM5.74 15.23A2 2 0 0 0 7.73 17h4.54a2 2 0 0 0 1.99-1.77L15.44 5H4.56l1.18 10.23ZM8.5 7.5c.28 0 .5.22.5.5v6a.5.5 0 0 1-1 0V8c0-.28.22-.5.5-.5ZM12 8a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V8Z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 20 20"><path fill="currentColor" d="M8 6a.5.5 0 0 1 0 1H6a3 3 0 0 0 0 6h2a.5.5 0 0 1 0 1H6a4 4 0 0 1 0-8h2Zm6 0a4 4 0 0 1 0 8h-2a.5.5 0 0 1 0-1h2a3 3 0 1 0 0-6h-2a.5.5 0 0 1 0-1h2ZM7 9.5h6a.5.5 0 0 1 0 1H7a.5.5 0 0 1 0-1Z"/></symbol>
+  <symbol id="i-unlink" viewBox="0 0 20 20"><path fill="currentColor" d="M8 6a.5.5 0 0 1 0 1H6a3 3 0 0 0-.2 6H8a.5.5 0 0 1 0 1H6a4 4 0 0 1 0-8h2Zm6 0a4 4 0 0 1 .2 8H12a.5.5 0 0 1 0-1h2a3 3 0 0 0 .2-6H12a.5.5 0 0 1 0-1h2ZM9.5 3c.28 0 .5.22.5.5v2a.5.5 0 0 1-1 0v-2c0-.28.22-.5.5-.5Zm1 11c.28 0 .5.22.5.5v2a.5.5 0 0 1-1 0v-2c0-.28.22-.5.5-.5Z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><path fill="currentColor" d="M10 2a3 3 0 0 1 3 3v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9c0-1.1.9-2 2-2h1V5a3 3 0 0 1 3-3Zm4 6H6a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1Zm-4 3a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm0-8a2 2 0 0 0-2 2v2h4V5a2 2 0 0 0-2-2Z"/></symbol>
+</svg>
+
+<script>
+(function () {
+  // Scale runs on a log rail: fine (small, dense hatch) on the left, coarse (large, open hatch) on the right.
+  const MIN = 10, MAX = 20000, STEPS = 1000;
+  const toPos = v => Math.round(Math.log(v / MIN) / Math.log(MAX / MIN) * STEPS);
+  const toVal = p => Math.round(MIN * Math.pow(MAX / MIN, p / STEPS));
+  const clamp = v => Math.min(MAX, Math.max(MIN, v));
+  const fmt = v => Math.round(v).toLocaleString('en-US');
+  const parse = s => { const n = parseFloat(String(s).replace(/[^\d.]/g, '')); return isFinite(n) ? n : null; };
+
+  const VARIANTS = [
+    { n: 1, title: 'Stacked sliders, linked fields', note: 'X and Y each get a slider. The chain on the bracket between the fields keeps them in proportion.', name: 'Brick Running Bond', file: 'brick_running_bond.jpg', x: 123, y: 456, linked: true, layout: 'v1' },
+    { n: 2, title: 'Lock aspect ratio switch', note: 'With the lock on, Y follows X and its controls are disabled.', name: 'Concrete Stipple', file: 'concrete_stipple.jpg', x: 123, y: 456, linked: true, layout: 'v2' },
+    { n: 3, title: 'Side-by-side sliders', note: 'X and Y sit next to each other with the chain between the rails. Fields sit under each rail.', name: 'Earth Diagonal', file: 'earth_diagonal.jpg', x: 123, y: 456, linked: true, layout: 'v3' },
+    { n: 4, title: 'Fields above, sliders below', note: 'Exact X and Y values come first, with the sliders and chain underneath for quick changes.', name: 'Insulation Batt', file: 'insulation_batt.jpg', x: 1234, y: 1234, linked: true, layout: 'v4' },
+    { n: 5, title: 'Lock switch, unlocked', note: 'Same as 2 with the lock off, so X and Y edit on their own. Turn the lock on to tie them together.', name: 'Wood Grain', file: 'wood_grain.jpg', x: 1234, y: 1234, linked: false, layout: 'v5' },
+    { n: 6, title: 'One slider that splits', note: 'Locked: one slider scales both values together. Unlock to split it into separate X and Y sliders.', name: 'Stone Ashlar', file: 'stone_ashlar.jpg', x: 123, y: 123, linked: true, layout: 'v6' },
+  ];
+
+  const icon = (id, cls = 'f-icon') => `<svg class="${cls}"><use href="#${id}"/></svg>`;
+  const chainBtn = () => `<button class="f-button f-button--subtle f-button--icon f-button--small chain" data-role="chain" aria-pressed="true" aria-label="Keep X and Y in proportion" title="Keep X and Y in proportion">
+      <svg class="i-linked"><use href="#i-link"/></svg><svg class="i-unlinked"><use href="#i-unlink"/></svg></button>`;
+  const num = (role, label, cls = '') => `<span class="f-input f-input--small num ${cls}"><input data-role="${role}" inputmode="decimal" aria-label="${label}"></span>`;
+  const rail = (role, label) => `<input type="range" class="f-slider f-slider--small" min="0" max="${STEPS}" data-role="${role}" aria-label="${label}">`;
+  const ends = `<div class="scale__ends" aria-hidden="true"><span>Fine</span><span>Coarse</span></div>`;
+  const lockRow = `<div class="row"><label class="f-switch lock"><input type="checkbox" data-role="lock"><span class="f-switch__track"></span>Lock aspect ratio</label></div>`;
+
+  const BODY = {
+    v1: () => `<div class="v1">
+        <label class="f-label" style="grid-column:1/-1">X scale</label>
+        <div class="scale" data-axis="x">${rail('x-rail', 'X scale')}${ends}</div>${num('x-num', 'X scale value')}
+        <span></span><div class="bracket">${chainBtn()}</div>
+        <label class="f-label" style="grid-column:1/-1">Y scale</label>
+        <div class="scale" data-axis="y">${rail('y-rail', 'Y scale')}${ends}</div>${num('y-num', 'Y scale value')}
+      </div>`,
+    v2: () => `${lockRow}
+      <div class="scale" data-axis="x"><div class="row"><label class="f-label">X scale</label>${num('x-num', 'X scale value')}</div>${rail('x-rail', 'X scale')}${ends}</div>
+      <div class="scale" data-axis="y"><div class="row"><label class="f-label">Y scale</label>${num('y-num', 'Y scale value')}</div>${rail('y-rail', 'Y scale')}${ends}</div>`,
+    v3: () => `<div class="pair">
+        <div class="scale" data-axis="x"><label class="f-label">X scale</label>${rail('x-rail', 'X scale')}${ends}${num('x-num', 'X scale value')}</div>
+        ${chainBtn()}
+        <div class="scale" data-axis="y"><label class="f-label">Y scale</label>${rail('y-rail', 'Y scale')}${ends}<div style="display:flex;justify-content:flex-end">${num('y-num', 'Y scale value')}</div></div>
+      </div>`,
+    v4: () => `<div class="pair__inputs">
+        <div class="xy-label"><label class="f-label">X</label>${num('x-num', 'X scale value', 'num--wide')}</div><span></span>
+        <div class="xy-label"><label class="f-label">Y</label>${num('y-num', 'Y scale value', 'num--wide')}</div>
+      </div>
+      <div class="pair">
+        <div class="scale" data-axis="x">${rail('x-rail', 'X scale')}${ends}</div>${chainBtn()}<div class="scale" data-axis="y">${rail('y-rail', 'Y scale')}${ends}</div>
+      </div>`,
+    v6: () => `${lockRow}
+      <div class="split" data-role="unified"><div class="f-stack" style="--gap:var(--spacingVerticalS)">
+        <div class="xy-inputs"><div class="f-field"><label class="f-label">X scale</label>${num('x-num', 'X scale value')}</div><div class="f-field"><label class="f-label">Y scale</label>${num('y-num', 'Y scale value')}</div></div>
+        <div class="scale">${rail('u-rail', 'Scale')}${ends}</div>
+      </div></div>
+      <div class="split is-collapsed" data-role="separate"><div class="f-stack" style="--gap:var(--spacingVerticalM)">
+        <div class="scale"><label class="f-label">X scale</label><div class="slider-row">${rail('x-rail', 'X scale')}${num('x2-num', 'X scale value')}</div>${ends}</div>
+        <div class="scale"><label class="f-label">Y scale</label><div class="slider-row">${rail('y-rail', 'Y scale')}${num('y2-num', 'Y scale value')}</div>${ends}</div>
+      </div></div>`,
+  };
+  BODY.v5 = BODY.v2;
+
+  const host = document.getElementById('variants');
+
+  VARIANTS.forEach(v => {
+    const pid = 'hp' + v.n;
+    const el = document.createElement('section');
+    el.className = 'variant';
+    el.setAttribute('aria-labelledby', `vt${v.n}`);
+    el.innerHTML = `
+      <div class="variant__head"><span class="variant__num">${v.n}</span>
+        <div><h2 class="variant__title text-subtitle-2" id="vt${v.n}">${v.title}</h2><p class="variant__note text-caption-1">${v.note}</p></div></div>
+      <div class="f-card f-card--outline panel">
+        <div class="hatch-row">
+          <div class="hatch-thumb"><svg viewBox="0 0 56 56" aria-hidden="true">
+            <defs><pattern id="${pid}" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 4h8" stroke="var(--colorNeutralForeground2)" stroke-width="1.2"/><path d="M4 0v4" stroke="var(--colorNeutralForeground3)" stroke-width="1"/></pattern></defs>
+            <rect width="56" height="56" fill="url(#${pid})"/></svg></div>
+          <div class="hatch-meta">
+            <div class="hatch-meta__name"><span>${v.name}</span>
+              <button class="f-button f-button--transparent f-button--icon f-button--small" aria-label="About ${v.name}" title="Image hatch, 512 × 512 px">${icon('i-info', 'f-icon f-icon--16')}</button></div>
+            <span class="hatch-meta__file">${v.file}</span>
+          </div>
+          <div class="hatch-actions">
+            <label class="f-switch" title="Show hatch"><input type="checkbox" checked aria-label="Show ${v.name}"><span class="f-switch__track"></span></label>
+            <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="Delete ${v.name}" title="Delete">${icon('i-delete', 'f-icon f-icon--16')}</button>
+          </div>
+        </div>
+        <div class="row"><label class="f-label" for="rot${v.n}">Rotation angle</label>
+          <span class="f-input f-input--small num"><input id="rot${v.n}" data-role="rot" inputmode="decimal" value="45"><span class="num__suffix">°</span></span></div>
+        ${BODY[v.layout]()}
+      </div>`;
+    host.appendChild(el);
+    wire(el, v, pid);
+  });
+
+  function wire(el, v, pid) {
+    const q = r => el.querySelectorAll(`[data-role="${r}"]`);
+    const one = r => el.querySelector(`[data-role="${r}"]`);
+    const state = { x: v.x, y: v.y, rot: 45, linked: v.linked, ratio: v.y / v.x };
+    const lock = one('lock');
+    if (lock) lock.checked = state.linked;
+
+    function paint() {
+      const setRail = (r, val) => q(r).forEach(i => { i.value = toPos(val); i.style.setProperty('--fill', i.value / STEPS * 100 + '%'); });
+      const setNum = (r, val) => q(r).forEach(i => { if (document.activeElement !== i) i.value = fmt(val); });
+      setRail('x-rail', state.x); setRail('y-rail', state.y); setRail('u-rail', Math.sqrt(state.x * state.y));
+      setNum('x-num', state.x); setNum('y-num', state.y); setNum('x2-num', state.x); setNum('y2-num', state.y);
+      q('chain').forEach(b => b.setAttribute('aria-pressed', state.linked));
+      // V2 / V5: Y is driven by X while the ratio is locked
+      if (v.layout === 'v2' || v.layout === 'v5') {
+        const yBlock = el.querySelector('.scale[data-axis="y"]');
+        yBlock.classList.toggle('is-disabled', state.linked);
+        yBlock.querySelectorAll('input').forEach(i => i.disabled = state.linked);
+        yBlock.querySelector('.f-input').classList.toggle('is-disabled', state.linked);
+      }
+      if (v.layout === 'v6') {
+        one('unified').classList.toggle('is-collapsed', !state.linked);
+        one('separate').classList.toggle('is-collapsed', state.linked);
+        one('unified').querySelectorAll('input').forEach(i => i.tabIndex = state.linked ? 0 : -1);
+        one('separate').querySelectorAll('input').forEach(i => i.tabIndex = state.linked ? -1 : 0);
+      }
+      // Thumbnail: bigger scale = coarser (wider) hatch
+      const k = val => Math.min(4, Math.max(0.35, Math.pow(val / 300, 0.45)));
+      el.querySelector(`#${pid}`).setAttribute('patternTransform', `rotate(${state.rot} 28 28) scale(${k(state.x).toFixed(3)} ${k(state.y).toFixed(3)})`);
+    }
+
+    function setX(val) { state.x = clamp(val); if (state.linked) state.y = clamp(state.x * state.ratio); else state.ratio = state.y / state.x; }
+    function setY(val) { state.y = clamp(val); if (state.linked) state.x = clamp(state.y / state.ratio); else state.ratio = state.y / state.x; }
+    function setUniform(val) { const g = Math.sqrt(state.x * state.y); const f = clamp(val) / g; state.x = clamp(state.x * f); state.y = clamp(state.y * f); }
+
+    q('x-rail').forEach(i => i.addEventListener('input', () => { setX(toVal(+i.value)); paint(); }));
+    q('y-rail').forEach(i => i.addEventListener('input', () => { setY(toVal(+i.value)); paint(); }));
+    q('u-rail').forEach(i => i.addEventListener('input', () => { setUniform(toVal(+i.value)); paint(); }));
+    const onNum = (setter) => i => {
+      i.addEventListener('change', () => { const n = parse(i.value); if (n !== null) setter(n); paint(); i.value = fmt(i.dataset.role.startsWith('x') ? state.x : state.y); });
+      i.addEventListener('keydown', e => {
+        if (e.key === 'Enter') i.blur();
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); const cur = parse(i.value) ?? 0; const step = e.shiftKey ? 10 : 1;
+          setter(cur + (e.key === 'ArrowUp' ? step : -step)); i.value = fmt(i.dataset.role.startsWith('x') ? state.x : state.y); paint(); }
+      });
+      i.addEventListener('blur', paint);
+    };
+    q('x-num').forEach(onNum(setX)); q('x2-num').forEach(onNum(setX));
+    q('y-num').forEach(onNum(setY)); q('y2-num').forEach(onNum(setY));
+    q('chain').forEach(b => b.addEventListener('click', () => { state.linked = !state.linked; state.ratio = state.y / state.x; paint(); }));
+    if (lock) lock.addEventListener('change', () => { state.linked = lock.checked; state.ratio = state.y / state.x; paint(); });
+    const rot = one('rot');
+    rot.addEventListener('change', () => { const n = parseFloat(rot.value); state.rot = isFinite(n) ? ((n % 360) + 360) % 360 : state.rot; rot.value = +state.rot.toFixed(1); paint(); });
+    paint();
+  }
+})();
+</script>
+</body>
+</html>

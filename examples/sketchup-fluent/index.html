@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SketchUp on Fluent</title>
+<!-- SketchUp 2027 desktop UI, rebuilt on Fluent 2 Web.
+     Icons: Miles - SketchUp Components › ⚡ Icons - Library. Light (LM) set in ./icons, dark (DM) set in ./icons/dark
+     https://www.figma.com/design/mxQFWg3eVuF7GbUZpMSVSp/Miles---SketchUp-Components?node-id=110-7434
+     Theme follows the OS; the toolbar toggle overrides it. Icons swap to their DM version in dark. -->
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="../../components/fluent.css">
+<style>
+  html, body { height: 100%; }
+  body.f-root { background: var(--colorNeutralBackground3); overflow: hidden; }
+  [hidden] { display: none !important; }
+
+  .su-icon { width: 24px; height: 24px; flex: none; display: block; }
+  .su-icon--20 { width: 20px; height: 20px; }
+
+  /* App frame */
+  .su-app { display: grid; grid-template-rows: auto auto auto 1fr auto; grid-template-columns: minmax(0, 1fr); height: 100%; background: var(--colorNeutralBackground1); }
+  .su-app > * { min-width: 0; }
+
+  /* Title bar */
+  .su-titlebar { position: relative; display: flex; align-items: center; height: 32px; padding: 0 var(--spacingHorizontalM);
+    background: var(--colorNeutralBackground3); border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .su-lights { display: flex; gap: var(--spacingHorizontalS); }
+  .su-lights i { width: 12px; height: 12px; border-radius: 50%; background: var(--colorPaletteRedForegroundInverted); }
+  .su-lights i:nth-child(2) { background: var(--colorPaletteMarigoldForeground1); }
+  .su-lights i:nth-child(3) { background: var(--colorPaletteGreenForegroundInverted); }
+  .su-title { position: absolute; left: 50%; transform: translateX(-50%); color: var(--colorNeutralForeground2); }
+
+  /* Command bar */
+  .su-commandbar { display: flex; align-items: center; gap: var(--spacingHorizontalXS); min-width: 0; padding: var(--spacingVerticalXS) var(--spacingHorizontalS);
+    border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .su-tools { display: flex; align-items: center; gap: var(--spacingHorizontalXXS); flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .su-tool { position: relative; }
+  .su-tool .f-button { width: 34px; min-width: 0; height: 36px; padding: 0; }
+  .su-tool .f-button[aria-pressed="true"] { background: var(--colorBrandBackground2); border-color: var(--colorBrandStroke2); }
+  .su-tool--group .f-button { width: 40px; justify-content: flex-start; padding-left: 4px; }
+  .su-tool__caret { position: absolute; right: 3px; bottom: 6px; width: 8px; height: 8px; color: var(--colorNeutralForeground3); pointer-events: none; }
+  .su-flyout { position: absolute; z-index: 20; top: calc(100% + var(--spacingVerticalXS)); left: 0; min-width: 200px; }
+  .su-cmd-end { display: flex; align-items: center; gap: var(--spacingHorizontalS); padding-left: var(--spacingHorizontalS); }
+
+  /* Document tabs */
+  .su-doctabs { display: flex; align-items: center; gap: var(--spacingHorizontalXS); padding: 0 var(--spacingHorizontalS); background: var(--colorNeutralBackground2);
+    border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .su-doctab { display: inline-flex; align-items: center; gap: var(--spacingHorizontalXS); height: 32px; padding: 0 var(--spacingHorizontalXS) 0 var(--spacingHorizontalM);
+    margin-top: var(--spacingVerticalXS); background: var(--colorNeutralBackground1); border: var(--strokeWidthThin) solid var(--colorNeutralStroke2); border-bottom: 0;
+    border-radius: var(--borderRadiusMedium) var(--borderRadiusMedium) 0 0; font-weight: var(--fontWeightSemibold); }
+  .su-doctab__dirty { width: 6px; height: 6px; border-radius: 50%; background: var(--colorBrandBackground1); }
+
+  /* Workspace */
+  .su-workspace { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; min-height: 0; }
+  .su-viewport { position: relative; min-width: 0; overflow: hidden; cursor: default; }
+  .su-viewport svg.su-scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .su-view-controls { position: absolute; top: var(--spacingVerticalM); left: var(--spacingHorizontalM); }
+  .su-view-controls .f-button { width: 32px; height: 32px; }
+  .su-scenes { position: absolute; left: var(--spacingHorizontalM); bottom: var(--spacingVerticalM); }
+  .su-scenes .f-tab { padding: var(--spacingVerticalS) var(--spacingHorizontalM); }
+
+  /* Tray */
+  .su-tray { width: 340px; display: flex; flex-direction: column; min-height: 0; background: var(--colorNeutralBackground1);
+    border-left: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .su-tray__header { display: flex; align-items: center; gap: var(--spacingHorizontalXS); height: 44px; padding: 0 var(--spacingHorizontalS) 0 var(--spacingHorizontalL);
+    border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .su-tray__title { flex: 1; font-weight: var(--fontWeightSemibold); }
+  .su-tray__body { flex: 1; overflow: auto; }
+  .su-panel { border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }
+  .su-panel__head { display: flex; align-items: center; gap: var(--spacingHorizontalS); width: 100%; min-height: 40px; padding: 0 var(--spacingHorizontalS) 0 var(--spacingHorizontalM);
+    border: 0; background: transparent; color: var(--colorNeutralForeground1); font: inherit; text-align: left; cursor: pointer; }
+  .su-panel__head:hover { background: var(--colorNeutralBackground1Hover); }
+  .su-panel__head:focus-visible { outline: var(--strokeWidthThick) solid var(--colorNeutralStrokeFocus2); outline-offset: -2px; }
+  .su-panel__chev { width: 12px; height: 12px; flex: none; color: var(--colorNeutralForeground3); transition: transform var(--durationNormal) var(--curveEasyEase); }
+  .su-panel[data-open="true"] .su-panel__chev { transform: rotate(90deg); }
+  .su-panel__label { flex: 1; }
+  .su-panel[data-open="true"] .su-panel__label { font-weight: var(--fontWeightSemibold); }
+  .su-panel__content { padding: var(--spacingVerticalXS) var(--spacingHorizontalL) var(--spacingVerticalL); }
+  .su-panel:not([data-open="true"]) .su-panel__content { display: none; }
+
+  .su-empty { display: flex; align-items: center; gap: var(--spacingHorizontalS); padding: var(--spacingVerticalM); border-radius: var(--borderRadiusMedium);
+    background: var(--colorNeutralBackground2); color: var(--colorNeutralForeground3); }
+
+  .su-mat-preview { display: grid; grid-template-columns: 72px 1fr; gap: var(--spacingHorizontalM); align-items: center; }
+  .su-mat-swatch { width: 72px; height: 72px; border-radius: var(--borderRadiusLarge); border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    background: linear-gradient(135deg, var(--su-mat, #a5bccc) 0 50%, var(--colorNeutralBackground1) 50% 100%); }
+  .su-mat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacingHorizontalS); }
+  .su-mat { display: flex; flex-direction: column; gap: var(--spacingVerticalXS); padding: 0; border: 0; background: none; font: inherit; color: var(--colorNeutralForeground2); cursor: pointer; text-align: left; }
+  .su-mat i { aspect-ratio: 1; border-radius: var(--borderRadiusMedium); border: var(--strokeWidthThin) solid var(--colorNeutralStrokeAlpha1); background: var(--su-swatch); }
+  .su-mat:hover i { box-shadow: var(--shadow4); }
+  .su-mat[aria-pressed="true"] i { outline: var(--strokeWidthThick) solid var(--colorBrandStroke1); outline-offset: 1px; }
+  .su-mat span { font-size: var(--fontSizeBase200); line-height: var(--lineHeightBase200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Icon rail */
+  .su-rail { display: flex; flex-direction: column; align-items: center; gap: var(--spacingVerticalXXS); width: 48px; padding: var(--spacingVerticalS) 0;
+    background: var(--colorNeutralBackground2); border-left: var(--strokeWidthThin) solid var(--colorNeutralStroke2); overflow-y: auto; }
+  .su-rail .f-button { width: 36px; height: 36px; position: relative; }
+  .su-rail .f-button[aria-pressed="true"] { background: var(--colorNeutralBackground1Selected); }
+  .su-rail .f-button[aria-pressed="true"]::before { content: ""; position: absolute; left: -6px; top: 10px; bottom: 10px; width: 3px;
+    border-radius: var(--borderRadiusCircular); background: var(--colorBrandBackground1); }
+  .su-rail__spacer { flex: 1; }
+
+  /* Status bar */
+  .su-statusbar { display: flex; align-items: center; gap: var(--spacingHorizontalM); height: 36px; padding: 0 var(--spacingHorizontalS) 0 var(--spacingHorizontalM);
+    background: var(--colorNeutralBackground2); border-top: var(--strokeWidthThin) solid var(--colorNeutralStroke2); color: var(--colorNeutralForeground2); }
+  .su-status__hint { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .su-status__tool { font-weight: var(--fontWeightSemibold); color: var(--colorNeutralForeground1); margin-right: var(--spacingHorizontalXS); }
+  .su-measure { display: flex; align-items: center; gap: var(--spacingHorizontalS); }
+  .su-measure .f-input { width: 180px; }
+
+  /* Narrow windows: the tray floats over the viewport instead of taking a column */
+  .su-workspace { position: relative; }
+  @media (max-width: 900px) {
+    .su-cmd-end .f-searchbox, .su-sync { display: none; }
+    .su-tray { position: absolute; top: 0; bottom: 0; right: 48px; z-index: 5; width: min(340px, calc(100% - 48px)); box-shadow: var(--shadow28); }
+  }
+  @media (max-width: 600px) {
+    .su-share-label { display: none; }
+    .su-title { display: none; }
+    .su-commandbar > [aria-label="Open"], .su-commandbar > [aria-label="Redo"] { display: none; }
+    .su-measure .f-input { width: 110px; }
+    .su-view-controls .f-toolbar__divider, .su-view-controls .f-button:nth-last-child(-n+3) { display: none; }
+  }
+
+  /* Scene colors are model content, not UI chrome, so they live here rather than in tokens */
+  .su-viewport { --scene-sky-top: #3fb0e6; --scene-sky-bottom: #c4e6f7; --scene-ground: #c3c4c9; --scene-red: #e02020; --scene-green: #20a020; --scene-blue: #2020e0; }
+
+  /* Ink colors from the Miles icon library (Icons Colors/Blue Dark and Electric Blue), for the one hand-drawn stand-in */
+  :root { --su-icon-ink: #0e416c; --su-icon-accent: #009ad9; }
+  :root[data-theme="dark"] { --su-icon-ink: #e0e1e9; --su-icon-accent: #4cc3f0; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --su-icon-ink: #e0e1e9; --su-icon-accent: #4cc3f0; } }
+</style>
+</head>
+<body class="f-root">
+<div class="su-app">
+
+  <div class="su-titlebar">
+    <div class="su-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="su-title text-caption-1-strong">Untitled — SketchUp 2027</div>
+  </div>
+
+  <header class="su-commandbar" role="toolbar" aria-label="Main toolbar">
+    <button class="f-button f-button--subtle f-button--icon" aria-label="Menu" title="Menu"><svg class="su-icon" viewBox="0 0 24 24"><path d="M3.75 6.5h16.5M3.75 12h16.5M3.75 17.5h16.5" stroke="var(--colorNeutralForeground2)" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    <button class="f-button f-button--subtle f-button--icon" aria-label="Open" title="Open"><img class="su-icon" src="icons/folder.svg" alt=""></button>
+    <button class="f-button f-button--subtle f-button--icon" aria-label="Save" title="Save"><img class="su-icon" src="icons/save.png" alt=""></button>
+    <button class="f-button f-button--subtle f-button--icon" aria-label="Undo" title="Undo"><img class="su-icon" src="icons/undo.svg" alt=""></button>
+    <button class="f-button f-button--subtle f-button--icon" aria-label="Redo" title="Redo"><img class="su-icon" src="icons/redo.svg" alt=""></button>
+    <span class="f-toolbar__divider" style="height:24px"></span>
+    <div class="su-tools" id="tools"></div>
+    <div class="su-cmd-end">
+      <span class="f-searchbox" style="width:200px"><img class="su-icon su-icon--20" src="icons/search.svg" alt=""><input placeholder="Search tools" aria-label="Search tools"></span>
+      <button class="f-button f-button--subtle f-button--icon" aria-label="AI Assistant" title="AI Assistant"><img class="su-icon" src="icons/ai_launcher.svg" alt=""></button>
+      <button class="f-button f-button--primary" aria-label="Share" style="min-width:0"><img class="su-icon su-icon--20" src="icons/sharesheet.svg" alt="" style="filter:brightness(0) invert(1)"><span class="su-share-label">Share</span></button>
+      <button class="f-button f-button--subtle f-button--icon" id="themeToggle" aria-label="Switch to dark theme" title="Switch theme">
+        <svg class="su-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#theme-icon"/></svg></button>
+      <span class="f-avatar f-avatar--blue" title="Account">SR</span>
+    </div>
+  </header>
+
+  <div class="su-doctabs">
+    <span class="su-doctab"><span class="su-doctab__dirty" title="Unsaved changes"></span>Untitled
+      <button class="f-button f-button--transparent f-button--icon f-button--small" aria-label="Close Untitled"><img class="su-icon su-icon--20" src="icons/close.svg" alt=""></button></span>
+    <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="New model" title="New model"><img class="su-icon su-icon--20" src="icons/add.svg" alt=""></button>
+    <span class="f-spacer"></span>
+    <span class="f-row su-sync" style="--gap:var(--spacingHorizontalXS);color:var(--colorNeutralForeground3)"><img class="su-icon su-icon--20" src="icons/cloud_synced.png" alt=""><span class="text-caption-1">Saved to Trimble Connect</span></span>
+  </div>
+
+  <div class="su-workspace">
+    <!-- Viewport -->
+    <section class="su-viewport" aria-label="Model viewport" id="viewport">
+      <svg class="su-scene" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--scene-sky-top)"/><stop offset="1" stop-color="var(--scene-sky-bottom)"/></linearGradient></defs>
+        <rect width="1000" height="230" fill="url(#sky)"/>
+        <rect y="230" width="1000" height="470" fill="var(--scene-ground)"/>
+        <!-- axes: origin at 520,480 -->
+        <line x1="514" y1="0" x2="520" y2="480" stroke="var(--scene-blue)" stroke-width="1.5"/>
+        <line x1="520" y1="480" x2="526" y2="700" stroke="var(--scene-blue)" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="520" y1="480" x2="1000" y2="350" stroke="var(--scene-green)" stroke-width="1.5"/>
+        <line x1="520" y1="480" x2="0" y2="620" stroke="var(--scene-green)" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="520" y1="480" x2="1000" y2="570" stroke="var(--scene-red)" stroke-width="1.5"/>
+        <line x1="520" y1="480" x2="0" y2="380" stroke="var(--scene-red)" stroke-width="1" stroke-dasharray="2 3"/>
+        <!-- scale figure -->
+        <g transform="translate(370 300)">
+          <ellipse cx="32" cy="196" rx="38" ry="5" fill="#000" opacity=".12"/>
+          <circle cx="30" cy="18" r="18" fill="#c99479" stroke="#2a2a2a" stroke-width="2"/>
+          <path d="M6 48c4-8 14-12 24-12s20 4 24 12l8 40-12 4-4-24v40H14V68l-4 24-12-4Z" fill="#1d2b4c" stroke="#2a2a2a" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M14 108h32l2 82H34l-4-60-4 60H12Z" fill="#3a3f36" stroke="#2a2a2a" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M-2 88l4 104" stroke="#2a2a2a" stroke-width="5" stroke-linecap="round"/>
+        </g>
+      </svg>
+
+      <div class="f-toolbar f-toolbar--floating su-view-controls" role="toolbar" aria-label="Views">
+        <button class="f-button f-button--subtle f-button--icon" title="Zoom extents" aria-label="Zoom extents"><img class="su-icon" src="icons/zoom_extents.svg" alt=""></button>
+        <span class="f-toolbar__divider"></span>
+        <button class="f-button f-button--subtle f-button--icon" title="Iso" aria-label="Iso view" aria-pressed="true"><img class="su-icon" src="icons/view_iso.svg" alt=""></button>
+        <button class="f-button f-button--subtle f-button--icon" title="Top" aria-label="Top view"><img class="su-icon" src="icons/view_top.svg" alt=""></button>
+        <button class="f-button f-button--subtle f-button--icon" title="Front" aria-label="Front view"><img class="su-icon" src="icons/view_front.svg" alt=""></button>
+        <span class="f-toolbar__divider"></span>
+        <button class="f-button f-button--subtle f-button--icon" title="Perspective" aria-label="Perspective camera"><img class="su-icon" src="icons/camera_perspective.svg" alt=""></button>
+      </div>
+
+      <div class="f-toolbar f-toolbar--floating su-scenes" role="tablist" aria-label="Scenes">
+        <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="Play scenes" title="Play"><img class="su-icon su-icon--20" src="icons/play.svg" alt=""></button>
+        <span class="f-toolbar__divider"></span>
+        <div class="f-tablist f-tablist--small f-tablist--circular">
+          <button class="f-tab" role="tab" aria-selected="true">Scene 1</button>
+          <button class="f-tab" role="tab">Scene 2</button>
+        </div>
+        <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="Add scene" title="Add scene"><img class="su-icon su-icon--20" src="icons/add.svg" alt=""></button>
+      </div>
+    </section>
+
+    <!-- Tray -->
+    <aside class="su-tray" id="tray" aria-label="Default Tray">
+      <div class="su-tray__header">
+        <span class="su-tray__title">Default Tray</span>
+        <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="Tray settings" title="Tray settings"><img class="su-icon su-icon--20" src="icons/settings.svg" alt=""></button>
+        <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="Hide tray" title="Hide tray" data-action="hide-tray"><img class="su-icon su-icon--20" src="icons/close.svg" alt=""></button>
+      </div>
+      <div class="su-tray__body" id="panels"></div>
+    </aside>
+
+    <nav class="su-rail" id="rail" aria-label="Panels"></nav>
+  </div>
+
+  <footer class="su-statusbar">
+    <img class="su-icon su-icon--20" src="icons/model_info.png" alt="" title="Model info">
+    <span class="su-status__hint"><span class="su-status__tool" id="statusTool">Select</span><span id="statusHint">Click or drag to select objects. Shift = Add/Subtract. Option = Add. Shift + Option = Subtract.</span></span>
+    <label class="su-measure"><span class="text-caption-1 f-text-tertiary" id="measureLabel">Measurements</span>
+      <span class="f-input f-input--small"><input id="measure" aria-labelledby="measureLabel"></span></label>
+  </footer>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="chev" viewBox="0 0 12 12"><path d="M4.65 2.15a.5.5 0 0 0 0 .7L7.79 6 4.65 9.15a.5.5 0 1 0 .7.7l3.5-3.5a.5.5 0 0 0 0-.7l-3.5-3.5a.5.5 0 0 0-.7 0Z" fill="currentColor"/></symbol>
+  <symbol id="caret" viewBox="0 0 8 8"><path d="M8 2 8 8 2 8Z" fill="currentColor"/></symbol>
+  <!-- Stand-in: the icon library has no Hatch Patterns icon -->
+  <symbol id="hatch" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" fill="none" stroke="var(--su-icon-ink)" stroke-width="1.25"/><path d="M4 12 12 4M4 19 19 4M10 20 20 10M17 20l3-3" stroke="var(--su-icon-accent)" stroke-width="1.25"/></symbol>
+  <!-- Half-filled circle: light/dark toggle -->
+  <symbol id="theme-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25" fill="none" stroke="var(--colorNeutralForeground2)" stroke-width="1.5"/><path d="M12 3.75a8.25 8.25 0 0 1 0 16.5Z" fill="var(--colorNeutralForeground2)"/></symbol>
+</svg>
+
+<script>
+(function () {
+  // Icon files on disk. Light set in icons/, dark set in icons/dark/; most are SVG, some are PNG renders.
+  const LIGHT_PNG = new Set(['arc','arc3','circle','cloud_synced','components','flip','help','model_info','pencil','pie','polygon','position_camera','rectangle','save','share','visible']);
+  const DARK = {"add":"png","ai_launcher":"png","arc":"png","arc2":"svg","arc3":"svg","axes":"svg","camera_perspective":"png","circle":"svg","close":"png","cloud_synced":"png","components":"png","dimension":"svg","entity_info":"png","environments":"png","eraser":"svg","filter":"png","flip":"png","folder":"png","follow_me":"svg","freehand":"svg","help":"png","label":"svg","lasso":"svg","look_around":"svg","materials":"png","model_info":"png","move":"svg","offset":"svg","orbit":"svg","outliner":"png","paint":"svg","pan":"svg","pencil":"svg","pie":"png","play":"png","polygon":"png","position_camera":"png","protractor":"svg","push_pull":"svg","rectangle":"png","redo":"png","rotate":"svg","save":"png","scale":"svg","scenes":"png","search":"png","section_plane":"svg","select":"svg","settings":"png","shadows":"png","sharesheet":"png","styles":"png","tags":"png","tape":"svg","text3d":"svg","undo":"png","view_front":"png","view_iso":"png","view_top":"png","visible":"png","walk":"png","warehouse":"svg","zoom":"svg","zoom_extents":"svg","zoom_prev":"svg","zoom_window":"svg"};
+  const root = document.documentElement;
+  const darkQuery = matchMedia('(prefers-color-scheme: dark)');
+  const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : darkQuery.matches;
+  const src = n => isDark() && DARK[n] ? `icons/dark/${n}.${DARK[n]}` : `icons/${n}.${LIGHT_PNG.has(n) ? 'png' : 'svg'}`;
+  // Re-point every icon <img> at the current theme's file
+  function refreshIcons(scope = document) {
+    scope.querySelectorAll('img[src^="icons/"]').forEach(img => {
+      const name = img.dataset.icon || (img.dataset.icon = img.getAttribute('src').split('/').pop().replace(/\.\w+$/, ''));
+      const next = src(name);
+      if (img.getAttribute('src') !== next) img.setAttribute('src', next);
+    });
+  }
+
+  // Toolbar tools. A group shows its first item and lists the rest in a flyout.
+  const TOOLS = [
+    [{ id: 'select', name: 'Select', key: 'Space', hint: 'Click or drag to select objects. Shift = Add/Subtract. Option = Add. Shift + Option = Subtract.' },
+     { id: 'lasso', name: 'Lasso', hint: 'Drag a freeform loop around the entities to select.' }],
+    [{ id: 'eraser', name: 'Eraser', key: 'E', hint: 'Click or drag over edges to erase. Option = Soften/Smooth. Shift = Hide.' }],
+    [{ id: 'pencil', name: 'Line', key: 'L', hint: 'Click to start a line. Type a length in Measurements to set it exactly.' },
+     { id: 'freehand', name: 'Freehand', hint: 'Click and drag to draw a freehand curve.' }],
+    [{ id: 'arc', name: 'Arc', key: 'A', hint: 'Click to place the center of the arc.' },
+     { id: 'arc2', name: '2 Point Arc', hint: 'Click to place the start point of the arc.' },
+     { id: 'arc3', name: '3 Point Arc', hint: 'Click to place the first point on the arc.' },
+     { id: 'pie', name: 'Pie', hint: 'Click to place the center of the pie.' }],
+    [{ id: 'rectangle', name: 'Rectangle', key: 'R', hint: 'Click to place the first corner of the rectangle.' },
+     { id: 'rect_rotated', name: 'Rotated Rectangle', hint: 'Click to place the first corner, then set the angle.' },
+     { id: 'circle', name: 'Circle', key: 'C', hint: 'Click to place the center of the circle.' },
+     { id: 'polygon', name: 'Polygon', hint: 'Click to place the center. Type a number + S to set the sides.' }],
+    'sep',
+    [{ id: 'push_pull', name: 'Push/Pull', key: 'P', hint: 'Click a face to push or pull it. Option = Create new starting face.' }],
+    [{ id: 'offset', name: 'Offset', key: 'F', hint: 'Click a face or edges to offset.' }],
+    [{ id: 'follow_me', name: 'Follow Me', hint: 'Select a path, then click the face to extrude along it.' }],
+    [{ id: 'move', name: 'Move', key: 'M', hint: 'Pick two points to move. Option = Copy.' }],
+    [{ id: 'rotate', name: 'Rotate', key: 'Q', hint: 'Pick a center point and two points to rotate. Option = Copy.' }],
+    [{ id: 'scale', name: 'Scale', key: 'S', hint: 'Select entities, then drag a grip to scale. Shift = Uniform.' }],
+    [{ id: 'flip', name: 'Flip', hint: 'Click a plane to flip the selection along.' }],
+    'sep',
+    [{ id: 'tape', name: 'Tape Measure', key: 'T', hint: 'Pick two points to measure. Option = Toggle guides.' },
+     { id: 'protractor', name: 'Protractor', hint: 'Click to place the center of the protractor.' },
+     { id: 'dimension', name: 'Dimension', hint: 'Pick two points or an edge to dimension.' },
+     { id: 'label', name: 'Text', hint: 'Click an entity to attach a leader text.' },
+     { id: 'text3d', name: '3D Text', hint: 'Type the text and click to place it.' },
+     { id: 'axes', name: 'Axes', hint: 'Click to place the axes origin.' }],
+    [{ id: 'paint', name: 'Paint Bucket', key: 'B', hint: 'Click a face to paint it. Option = Sample. Shift = Paint all matching.' }],
+    [{ id: 'section_plane', name: 'Section Plane', hint: 'Click a face to place the section plane.' }],
+    'sep',
+    [{ id: 'orbit', name: 'Orbit', key: 'O', hint: 'Drag to orbit. Shift = Pan.' }],
+    [{ id: 'pan', name: 'Pan', key: 'H', hint: 'Drag to pan the view.' }],
+    [{ id: 'zoom', name: 'Zoom', key: 'Z', hint: 'Drag up or down to zoom. Shift = Change field of view.' },
+     { id: 'zoom_window', name: 'Zoom Window', hint: 'Drag a window to zoom into.' },
+     { id: 'zoom_prev', name: 'Previous View', hint: 'Returns to the previous view.' }],
+    [{ id: 'zoom_extents', name: 'Zoom Extents', key: '⇧Z', hint: 'Fits the entire model in the view.' }],
+    [{ id: 'position_camera', name: 'Position Camera', hint: 'Click to place the camera at eye height.' },
+     { id: 'walk', name: 'Walk', hint: 'Drag to walk. Shift = Up/Down. Ctrl = Run.' },
+     { id: 'look_around', name: 'Look Around', hint: 'Drag to look around from the current eye position.' }],
+    'sep',
+    [{ id: 'warehouse', name: '3D Warehouse', hint: 'Find and download models from 3D Warehouse.' }],
+  ];
+
+  const toolsEl = document.getElementById('tools');
+  const statusTool = document.getElementById('statusTool');
+  const statusHint = document.getElementById('statusHint');
+  let openFlyout = null;
+
+  function closeFlyout() { if (openFlyout) { openFlyout.hidden = true; openFlyout = null; } }
+
+  function activate(btn, tool) {
+    toolsEl.querySelectorAll('.su-tool > .f-button').forEach(b => b.removeAttribute('aria-pressed'));
+    btn.setAttribute('aria-pressed', 'true');
+    statusTool.textContent = tool.name;
+    statusHint.textContent = tool.hint;
+  }
+
+  for (const group of TOOLS) {
+    if (group === 'sep') { toolsEl.insertAdjacentHTML('beforeend', '<span class="f-toolbar__divider" style="height:24px"></span>'); continue; }
+    const wrap = document.createElement('div');
+    wrap.className = 'su-tool' + (group.length > 1 ? ' su-tool--group' : '');
+    const btn = document.createElement('button');
+    btn.className = 'f-button f-button--subtle';
+    const setFace = t => {
+      btn.innerHTML = `<img class="su-icon" src="${src(t.id)}" alt="">`;
+      btn.title = t.name + (t.key ? `  (${t.key})` : '');
+      btn.setAttribute('aria-label', t.name);
+      btn.dataset.tool = t.id;
+    };
+    setFace(group[0]);
+    let current = group[0];
+    wrap.appendChild(btn);
+    btn.addEventListener('click', () => { closeFlyout(); activate(btn, current); });
+
+    if (group.length > 1) {
+      wrap.insertAdjacentHTML('beforeend', '<svg class="su-tool__caret"><use href="#caret"/></svg>');
+      const menu = document.createElement('div');
+      menu.className = 'f-menu su-flyout'; menu.setAttribute('role', 'menu'); menu.hidden = true;
+      menu.innerHTML = group.map(t => `<button class="f-menu-item" role="menuitem" data-id="${t.id}"><img class="su-icon" src="${src(t.id)}" alt=""><span class="f-menu-item__label">${t.name}</span>${t.key ? `<span class="f-menu-item__shortcut">${t.key}</span>` : ''}</button>`).join('');
+      wrap.appendChild(menu);
+      btn.addEventListener('contextmenu', e => { e.preventDefault(); toggle(); });
+      let timer;
+      btn.addEventListener('pointerdown', () => { timer = setTimeout(toggle, 350); });
+      btn.addEventListener('pointerup', () => clearTimeout(timer));
+      wrap.querySelector('.su-tool__caret').style.pointerEvents = 'auto';
+      wrap.querySelector('.su-tool__caret').addEventListener('click', e => { e.stopPropagation(); toggle(); });
+      function toggle() {
+        if (openFlyout === menu) return closeFlyout();
+        closeFlyout();
+        const r = btn.getBoundingClientRect();
+        menu.style.position = 'fixed'; menu.style.left = r.left + 'px'; menu.style.top = (r.bottom + 4) + 'px';
+        menu.hidden = false; openFlyout = menu;
+      }
+      menu.addEventListener('click', e => {
+        const item = e.target.closest('.f-menu-item'); if (!item) return;
+        current = group.find(t => t.id === item.dataset.id);
+        setFace(current); activate(btn, current); closeFlyout();
+      });
+    }
+    toolsEl.appendChild(wrap);
+  }
+  document.addEventListener('click', e => { if (openFlyout && !e.target.closest('.su-tool')) closeFlyout(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') return closeFlyout();
+    if (e.target.matches?.('input, textarea, select')) return;
+    const all = TOOLS.filter(g => g !== 'sep').flat();
+    const t = all.find(t => t.key && t.key.toLowerCase() === e.key.toLowerCase() && !e.shiftKey);
+    if (!t) return;
+    const btn = [...toolsEl.querySelectorAll('.su-tool > .f-button')].find(b => b.dataset.tool === t.id);
+    if (btn) activate(btn, t);
+  });
+  activate(toolsEl.querySelector('.su-tool > .f-button'), TOOLS[0][0]);
+
+  // Tray panels
+  const MATERIALS = [['Asphalt', '#55565a'], ['Brick', '#a4553f'], ['Fabric', '#7c6f9c'], ['Glass', '#bcdbe8'], ['Ground', '#7e8b4f'], ['Metal', '#9ea3a8'], ['Stone', '#b2aa9a'], ['Wood', '#b07a49']];
+  const PANELS = [
+    { id: 'entity', name: 'Entity Info', icon: 'entity_info', open: true,
+      body: `<div class="su-empty"><img class="su-icon" src="${src('entity_info')}" alt="">No selection. Select an entity to see its properties.</div>` },
+    { id: 'materials', name: 'Materials', icon: 'materials', open: true,
+      body: `<div class="f-stack">
+        <div class="su-mat-preview"><span class="su-mat-swatch" id="matSwatch"></span>
+          <div class="f-field"><label class="f-label f-label--small" for="matName">Name</label><span class="f-input f-input--small"><input id="matName" value="Default"></span></div></div>
+        <div class="f-tablist f-tablist--small" role="tablist"><button class="f-tab" role="tab" aria-selected="true">Select</button><button class="f-tab" role="tab">Edit</button></div>
+        <div class="f-row" style="flex-wrap:nowrap">
+          <span class="f-select f-select--small" style="flex:1"><select aria-label="Library"><option>Materials</option><option>In Model</option><option>Colors</option></select><svg class="f-icon f-icon--16 f-select__chevron" viewBox="0 0 12 12" style="transform:rotate(90deg)"><use href="#chev"/></svg></span>
+          <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="Filter" title="Filter"><img class="su-icon su-icon--20" src="${src('filter')}" alt=""></button>
+          <button class="f-button f-button--subtle f-button--icon f-button--small" aria-label="Create material" title="Create material"><img class="su-icon su-icon--20" src="${src('add')}" alt=""></button>
+        </div>
+        <div class="su-mat-grid">${MATERIALS.map(([n, c]) => `<button class="su-mat" style="--su-swatch:${c}" data-color="${c}" data-name="${n}"><i></i><span>${n}</span></button>`).join('')}</div>
+      </div>` },
+    { id: 'components', name: 'Components', icon: 'components' },
+    { id: 'styles', name: 'Styles', icon: 'styles' },
+    { id: 'environments', name: 'Environments', icon: 'environments' },
+    { id: 'tags', name: 'Tags', icon: 'tags',
+      body: `<ul class="f-list">${['Untagged', 'Scale figure'].map((t, i) => `<li class="f-list-item"><img class="su-icon su-icon--20" src="${src('visible')}" alt="Visible"><span style="flex:1">${t}</span>${i === 0 ? '<span class="f-badge f-badge--brand f-badge--tint f-badge--rounded f-badge--small">Active</span>' : ''}</li>`).join('')}</ul>` },
+    { id: 'shadows', name: 'Shadows', icon: 'shadows',
+      body: `<label class="f-switch" style="padding-left:0"><input type="checkbox"><span class="f-switch__track"></span>Show shadows</label>
+        <div class="f-field"><label class="f-label f-label--small">Time</label><input type="range" class="f-slider" value="45"></div>` },
+    { id: 'scenes', name: 'Scenes', icon: 'scenes' },
+    { id: 'outliner', name: 'Outliner', icon: 'outliner' },
+    { id: 'instructor', name: 'Instructor', icon: 'help' },
+    { id: 'hatch', name: 'Hatch Patterns', icon: null },
+  ];
+  const iconHtml = p => p.icon ? `<img class="su-icon su-icon--20" src="${src(p.icon)}" alt="">` : '<svg class="su-icon su-icon--20"><use href="#hatch"/></svg>';
+  const panelsEl = document.getElementById('panels');
+  panelsEl.innerHTML = PANELS.map(p => `
+    <section class="su-panel" data-id="${p.id}" data-open="${!!p.open}">
+      <button class="su-panel__head" aria-expanded="${!!p.open}"><svg class="su-panel__chev"><use href="#chev"/></svg>${iconHtml(p)}<span class="su-panel__label">${p.name}</span></button>
+      <div class="su-panel__content">${p.body || `<div class="su-empty">${iconHtml(p)}${p.name} panel content</div>`}</div>
+    </section>`).join('');
+  panelsEl.addEventListener('click', e => {
+    const head = e.target.closest('.su-panel__head');
+    if (head) { const s = head.parentElement; setOpen(s, s.dataset.open !== 'true'); return; }
+    const mat = e.target.closest('.su-mat');
+    if (mat) {
+      panelsEl.querySelectorAll('.su-mat').forEach(m => m.removeAttribute('aria-pressed'));
+      mat.setAttribute('aria-pressed', 'true');
+      document.getElementById('matSwatch').style.setProperty('--su-mat', mat.dataset.color);
+      document.getElementById('matName').value = mat.dataset.name;
+      const paint = [...toolsEl.querySelectorAll('.su-tool > .f-button')].find(b => b.dataset.tool === 'paint');
+      activate(paint, TOOLS.flat().find(t => t.id === 'paint'));
+    }
+  });
+
+  // Icon rail mirrors the panels; clicking one opens it in the tray and scrolls to it
+  const railEl = document.getElementById('rail');
+  const tray = document.getElementById('tray');
+  railEl.innerHTML = PANELS.map(p => `<button class="f-button f-button--subtle f-button--icon" data-id="${p.id}" title="${p.name}" aria-label="${p.name}">${iconHtml(p).replace('su-icon--20', '')}</button>`).join('')
+    + `<span class="su-rail__spacer"></span><button class="f-button f-button--subtle f-button--icon" title="Model Info" aria-label="Model Info"><img class="su-icon" src="${src('model_info')}" alt=""></button>`;
+  function setOpen(section, open) {
+    section.dataset.open = open; section.querySelector('.su-panel__head').setAttribute('aria-expanded', open);
+    syncRail();
+  }
+  function syncRail() {
+    railEl.querySelectorAll('[data-id]').forEach(b => b.setAttribute('aria-pressed', !tray.hidden && panelsEl.querySelector(`[data-id="${b.dataset.id}"]`).dataset.open === 'true'));
+  }
+  railEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-id]'); if (!b) return;
+    tray.hidden = false;
+    const s = panelsEl.querySelector(`[data-id="${b.dataset.id}"]`);
+    setOpen(s, true); s.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+  document.querySelector('[data-action="hide-tray"]').addEventListener('click', () => { tray.hidden = true; syncRail(); });
+  // On a narrow window the tray covers the viewport, so start with it closed
+  if (matchMedia('(max-width: 900px)').matches) tray.hidden = true;
+  syncRail();
+
+  // Theme: OS by default, toolbar toggle overrides and is remembered per browser
+  const toggle = document.getElementById('themeToggle');
+  function applyTheme() {
+    refreshIcons();
+    toggle.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+  }
+  try { const saved = localStorage.getItem('su-theme'); if (saved) root.dataset.theme = saved; } catch (e) {}
+  toggle.addEventListener('click', () => {
+    root.dataset.theme = isDark() ? 'light' : 'dark';
+    try { localStorage.setItem('su-theme', root.dataset.theme); } catch (e) {}
+    applyTheme();
+  });
+  darkQuery.addEventListener('change', () => { if (!root.dataset.theme) applyTheme(); });
+  applyTheme();
+})();
+</script>
+</body>
+</html>

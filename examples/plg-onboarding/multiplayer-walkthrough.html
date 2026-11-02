@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multiplayer Editing Walkthrough</title>
+<!-- Source: PLG Onboarding 2026 › Realtime Collaboration - RTC › RTE Public Labs : User Workflows
+     https://www.figma.com/design/zuJvniRhLdHHtDXeSbvqXh/PLG-Onboarding-2026?node-id=5244-9069
+     Steps: 5244:9069 (1), 5244:8994 (2), 5244:9036 (3). Rebuilt on Fluent 2 Web. -->
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="../../components/fluent.css">
+<style>
+  /* Walkthrough dialog: a Fluent dialog surface with an edge-to-edge hero band,
+     so the default dialog padding moves onto each section. */
+  .walkthrough { width: min(560px, 100%); padding: 0; gap: 0; overflow: hidden; }
+  .walkthrough__header { display: flex; align-items: center; justify-content: space-between;
+    padding: var(--spacingVerticalS) var(--spacingHorizontalS) var(--spacingVerticalS) var(--spacingHorizontalXXL); }
+  .walkthrough__product { margin: 0; font-size: var(--fontSizeBase300); line-height: var(--lineHeightBase300);
+    font-weight: var(--fontWeightSemibold); color: var(--colorNeutralForeground2); }
+  .walkthrough__hero { display: grid; place-items: center; height: 132px; background: var(--colorBrandBackground2); color: var(--colorBrandForeground1); }
+  .walkthrough__hero svg { width: 64px; height: 64px; }
+  .walkthrough__content { display: flex; flex-direction: column; gap: var(--spacingVerticalM);
+    padding: var(--spacingVerticalXL) var(--spacingHorizontalXXL) var(--spacingVerticalS); }
+  .walkthrough__eyebrow { margin: 0; color: var(--colorBrandForeground1); text-transform: uppercase; letter-spacing: 0.04em; }
+  .walkthrough__title { margin: 0; }
+  .walkthrough__body { margin: 0; color: var(--colorNeutralForeground2); }
+  .walkthrough__bullets { display: flex; flex-direction: column; gap: var(--spacingVerticalS); margin: 0; padding: 0; list-style: none; }
+  .walkthrough__bullets li { display: flex; gap: var(--spacingHorizontalMNudge); align-items: flex-start; color: var(--colorNeutralForeground1); }
+  .walkthrough__bullets .f-icon { color: var(--colorBrandForeground1); margin-top: 0; }
+  .walkthrough__issues { display: flex; flex-direction: column; gap: var(--spacingVerticalS); }
+  .walkthrough__help { flex-direction: row; align-items: center; gap: var(--spacingHorizontalM); padding: var(--spacingVerticalL) var(--spacingHorizontalL); text-decoration: none; }
+  .walkthrough__help-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--spacingVerticalXXS); }
+  .walkthrough__help-title { color: var(--colorBrandForegroundLink); font-weight: var(--fontWeightSemibold); }
+  .walkthrough__help:hover .walkthrough__help-title { color: var(--colorBrandForegroundLinkHover); text-decoration: underline; }
+  .walkthrough__help .f-icon { color: var(--colorBrandForeground1); }
+  .walkthrough__footer { display: flex; align-items: center; justify-content: space-between;
+    padding: var(--spacingVerticalL) var(--spacingHorizontalXXL) var(--spacingVerticalXL); }
+  .walkthrough__actions { display: flex; gap: var(--spacingHorizontalS); }
+  [hidden] { display: none !important; }
+
+  /* Mock-only chrome */
+  .mock-stage { min-height: 100vh; }
+  .mock-reopen { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+</style>
+</head>
+<body class="f-root">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Fluent-style stand-ins for the design's icons (dismiss, people, warning, question, checkmark, open) -->
+  <symbol id="i-dismiss" viewBox="0 0 20 20"><path d="M4.09 4.22l.06-.07a.5.5 0 0 1 .63-.06l.07.06L10 9.29l5.15-5.14a.5.5 0 0 1 .63-.06l.07.06c.18.17.2.44.06.63l-.06.07L10.71 10l5.14 5.15c.18.17.2.44.06.63l-.06.07a.5.5 0 0 1-.63.06l-.07-.06L10 10.71l-5.15 5.14a.5.5 0 0 1-.63.06l-.07-.06a.5.5 0 0 1-.06-.63l.06-.07L9.29 10 4.15 4.85a.5.5 0 0 1-.06-.63l.06-.07-.06.07Z"/></symbol>
+  <symbol id="i-checkmark" viewBox="0 0 20 20"><path d="M7.03 13.9 3.56 10a.75.75 0 0 0-1.12 1l4 4.5c.29.32.79.34 1.09.03l10.5-10.5A.75.75 0 0 0 16.97 4L7.03 13.9Z"/></symbol>
+  <symbol id="i-open" viewBox="0 0 20 20"><path d="M6 4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2v-2.5a.5.5 0 0 1 1 0V14a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h2.5a.5.5 0 0 1 0 1H6Zm5-.5c0-.28.22-.5.5-.5h5c.28 0 .5.22.5.5v5a.5.5 0 0 1-1 0V4.7l-5.15 5.15a.5.5 0 0 1-.7-.7L15.29 4H11.5a.5.5 0 0 1-.5-.5Z"/></symbol>
+  <symbol id="i-warning-16" viewBox="0 0 20 20"><path d="M8.68 2.79a1.5 1.5 0 0 1 2.64 0l6.5 12A1.5 1.5 0 0 1 16.5 17h-13a1.5 1.5 0 0 1-1.32-2.21l6.5-12ZM10 13a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0-6.5a.5.5 0 0 0-.5.5v4.5a.5.5 0 0 0 1 0V7a.5.5 0 0 0-.5-.5Z"/></symbol>
+  <symbol id="i-people-hero" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="24" cy="20" r="9"/><circle cx="44" cy="24" r="7"/><path d="M8 50c0-8.8 7.2-15 16-15s16 6.2 16 15"/><path d="M40 37c1.3-.4 2.6-.6 4-.6 6.6 0 12 4.6 12 11.6"/></g></symbol>
+  <symbol id="i-warning-hero" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28.5 10.6a4 4 0 0 1 7 0l22.3 39.4A4 4 0 0 1 54.3 56H9.7a4 4 0 0 1-3.5-6l22.3-39.4Z"/><path d="M32 25v14"/></g><circle cx="32" cy="46" r="2" fill="currentColor"/></symbol>
+  <symbol id="i-question-hero" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="32" cy="32" r="24"/><path d="M25.5 26a6.5 6.5 0 1 1 9.6 5.7c-1.9 1-3.1 2.6-3.1 4.6V38"/></g><circle cx="32" cy="45" r="2" fill="currentColor"/></symbol>
+</svg>
+
+<div class="f-overlay mock-stage" id="overlay">
+  <section class="f-dialog walkthrough" role="dialog" aria-modal="true" aria-labelledby="wt-title" id="walkthrough">
+    <header class="walkthrough__header">
+      <p class="walkthrough__product">Multiplayer editing</p>
+      <button class="f-button f-button--subtle f-button--icon" aria-label="Close" data-action="close"><svg class="f-icon"><use href="#i-dismiss"/></svg></button>
+    </header>
+
+    <!-- Step 1 — 5244:9069 -->
+    <div class="walkthrough__step" data-step="0">
+      <div class="walkthrough__hero"><svg aria-hidden="true"><use href="#i-people-hero"/></svg></div>
+      <div class="walkthrough__content">
+        <p class="walkthrough__eyebrow text-caption-1-strong">New</p>
+        <h2 class="walkthrough__title text-subtitle-1" id="wt-title">Introducing multiplayer editing</h2>
+        <p class="walkthrough__body text-body-1">[PLACEHOLDER] Work in the same SketchUp model at the same time as your teammates, and see changes as they happen.</p>
+        <ul class="walkthrough__bullets text-body-1">
+          <li><svg class="f-icon"><use href="#i-checkmark"/></svg>[PLACEHOLDER] See collaborators’ cursors and edits live</li>
+          <li><svg class="f-icon"><use href="#i-checkmark"/></svg>[PLACEHOLDER] Invite people by sharing the model</li>
+          <li><svg class="f-icon"><use href="#i-checkmark"/></svg>[PLACEHOLDER] Changes save automatically</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Step 2 — 5244:8994 -->
+    <div class="walkthrough__step" data-step="1" hidden>
+      <div class="walkthrough__hero"><svg aria-hidden="true"><use href="#i-warning-hero"/></svg></div>
+      <div class="walkthrough__content">
+        <p class="walkthrough__eyebrow text-caption-1-strong">Heads up</p>
+        <h2 class="walkthrough__title text-subtitle-1">Known issues</h2>
+        <p class="walkthrough__body text-body-1">[PLACEHOLDER] Multiplayer editing is still evolving. Here is what we are working on:</p>
+        <div class="walkthrough__issues">
+          <div class="f-messagebar f-messagebar--warning"><svg class="f-icon"><use href="#i-warning-16"/></svg><div class="f-messagebar__body">[PLACEHOLDER] Known issue one</div></div>
+          <div class="f-messagebar f-messagebar--warning"><svg class="f-icon"><use href="#i-warning-16"/></svg><div class="f-messagebar__body">[PLACEHOLDER] Known issue two</div></div>
+          <div class="f-messagebar f-messagebar--warning"><svg class="f-icon"><use href="#i-warning-16"/></svg><div class="f-messagebar__body">[PLACEHOLDER] Known issue three</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 — 5244:9036 -->
+    <div class="walkthrough__step" data-step="2" hidden>
+      <div class="walkthrough__hero"><svg aria-hidden="true"><use href="#i-question-hero"/></svg></div>
+      <div class="walkthrough__content">
+        <p class="walkthrough__eyebrow text-caption-1-strong">Learn more</p>
+        <h2 class="walkthrough__title text-subtitle-1">Get the full details</h2>
+        <p class="walkthrough__body text-body-1">[PLACEHOLDER] Our help center article covers setup, permissions, and troubleshooting.</p>
+        <a class="f-card f-card--outline f-card--interactive walkthrough__help" href="#" target="_blank" rel="noopener">
+          <span class="walkthrough__help-text">
+            <span class="walkthrough__help-title">Multiplayer editing in the Help Center</span>
+            <span class="text-caption-1 f-text-secondary">Opens in a new tab</span>
+          </span>
+          <svg class="f-icon"><use href="#i-open"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <footer class="walkthrough__footer">
+      <div class="f-step-dots" role="group" aria-label="Walkthrough steps">
+        <button class="f-step-dot" data-goto="0" aria-label="Step 1 of 3"></button>
+        <button class="f-step-dot" data-goto="1" aria-label="Step 2 of 3"></button>
+        <button class="f-step-dot" data-goto="2" aria-label="Step 3 of 3"></button>
+      </div>
+      <div class="walkthrough__actions">
+        <button class="f-button" data-action="back">Back</button>
+        <button class="f-button f-button--primary" data-action="next">Next</button>
+      </div>
+    </footer>
+  </section>
+</div>
+
+<button class="f-button f-button--primary mock-reopen" id="reopen" hidden>Show walkthrough again</button>
+
+<script>
+(function () {
+  const steps = [...document.querySelectorAll('.walkthrough__step')];
+  const dots = [...document.querySelectorAll('.f-step-dot')];
+  const back = document.querySelector('[data-action="back"]');
+  const next = document.querySelector('[data-action="next"]');
+  const overlay = document.getElementById('overlay');
+  const reopen = document.getElementById('reopen');
+  const start = Math.min(Math.max(parseInt(new URLSearchParams(location.search).get('step') || '1', 10) - 1, 0), steps.length - 1);
+  let current = start;
+
+  function show(i) {
+    current = i;
+    steps.forEach((s, n) => { s.hidden = n !== i; });
+    dots.forEach((d, n) => n === i ? d.setAttribute('aria-current', 'step') : d.removeAttribute('aria-current'));
+    back.hidden = i === 0;
+    next.textContent = i === steps.length - 1 ? 'Got it' : 'Next';
+    steps[i].querySelector('.walkthrough__title').id = 'wt-title';
+    steps.forEach((s, n) => { if (n !== i) s.querySelector('.walkthrough__title').removeAttribute('id'); });
+  }
+  function close() { overlay.hidden = true; reopen.hidden = false; }
+
+  next.addEventListener('click', () => current === steps.length - 1 ? close() : show(current + 1));
+  back.addEventListener('click', () => show(Math.max(0, current - 1)));
+  dots.forEach(d => d.addEventListener('click', () => show(+d.dataset.goto)));
+  document.querySelector('[data-action="close"]').addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) close(); });
+  reopen.addEventListener('click', () => { overlay.hidden = false; reopen.hidden = true; show(0); });
+  show(start);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Eraser_LM">
+<g id="eraser componment">
+<g id="Rectangle 476">
+<path d="M14.1671 2.00002L21.2383 9.07122L10.1925 20.117C9.02094 21.2886 7.12145 21.2886 5.94988 20.117L0.999999 15.1671L14.1671 2.00002Z" fill="#DCEDF9"/>
+<mask id="stroke0_0_1846" fill="white">
+<path d="M14.1671 2.00002L21.2383 9.07122L10.1925 20.117C9.02094 21.2886 7.12145 21.2886 5.94988 20.117L0.999999 15.1671L14.1671 2.00002Z"/>
+</mask>
+<path d="M14.1671 2.00002L21.2383 9.07122L10.1925 20.117C9.02094 21.2886 7.12145 21.2886 5.94988 20.117L0.999999 15.1671L14.1671 2.00002Z" stroke-width="2" stroke="#0E416C" mask="url(#stroke0_0_1846)"/>
+</g>
+<path id="Line 24 (Stroke)" d="M16.0689 12.8263L10.4121 7.1694L10.9424 6.63907L16.5992 12.2959L16.0689 12.8263Z" fill-rule="evenodd" clip-rule="evenodd" fill="#0E416C"/>
+<path id="Line 24 (Stroke)_2" d="M11.2959 17.5993L5.63907 11.9424L6.1694 11.4121L11.8262 17.0689L11.2959 17.5993Z" fill-rule="evenodd" clip-rule="evenodd" fill="#0E416C"/>
+<rect id="Rectangle 3616" x="6.1694" y="11.4121" width="6" height="8" transform="rotate(-45 6.1694 11.4121)" fill="#009AD9"/>
+</g>
+<path id="line" d="M3.48682 22L20.9868 22" stroke-linecap="round" stroke="#009AD9"/>
+</g>
+</svg>

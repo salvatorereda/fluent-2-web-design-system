@@ -17,6 +17,7 @@ Extracted: 2026-10-28
 | `components/fluent.css` | Component styles (`.f-*` classes) built only from the tokens. |
 | `index.html` | Live reference gallery for every token and component. |
 | `templates/starter.html` | App-shell starting point for a new mock. |
+| `examples/` | Mocks built on the system, with their own [README](examples/README.md). |
 
 ## Using it in a mock
 
@@ -26,7 +27,7 @@ Extracted: 2026-10-28
 <body class="f-root"> … </body>
 ```
 
-To start a new mock, copy `templates/starter.html` into a `mocks/` folder next to it and fix the two stylesheet paths.
+To start a new mock, copy `templates/starter.html` into a folder beside the others in `examples/`; its stylesheet paths already resolve from there. See [`examples/`](examples/README.md) for working mocks.
 
 **Theme:** Light is the default. Without a `data-theme` attribute the page follows the OS. To force a theme, set `<html data-theme="dark">` or `data-theme="light"`.
 
